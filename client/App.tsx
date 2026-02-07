@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { HashRouter, Routes, Route } from "react-router-dom"; // ✅ Changed to HashRouter
+// CHANGE 1: Import HashRouter instead of BrowserRouter
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Wildcard from "./pages/Wildcard";
 import Admin from "./pages/Admin";
@@ -16,7 +17,7 @@ export default function App() {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {/* ✅ Changed to HashRouter */}
+        {/* CHANGE 2: Use HashRouter here */}
         <HashRouter>
           <Routes>
             <Route path="/" element={<Index />} />
