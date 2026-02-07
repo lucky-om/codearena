@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # We use standard NPM here for simplicity and stability
+      - name: Install Dependencies Bg
+        run: npm install
+
+      - name: Build Website fw
+        run: npm run build
+        env:
+          # Failsafe: Uses your secret if set, otherwise uses the hardcoded link you shared
+          VITE_SHEET_API_URL: ${{ secrets.VITE_SHEET_API_URL || 'https://script.google.com/macros/s/AKfycbxkHvk2KMAkNjmuAD4w7uxezVb9SXv0mzcoeiC08UEqTm9LHzwLhoFI2pX47Bcs9VHk/exec' }}
+          VITE_ADMIN_KEY: ${{ secrets.VITE_ADMIN_KEY || 'LUCKY' }}
+
+      - name: Deploy to GitHub Pages 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist # The folder Vite creates
+          branch: gh-pages # The branch the website lives on

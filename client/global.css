@@ -1,0 +1,186 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme - Cyberpunk Neon
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    --background: 260 50% 8%;
+    --foreground: 120 100% 95%;
+
+    --card: 260 40% 12%;
+    --card-foreground: 120 100% 90%;
+
+    --popover: 260 40% 12%;
+    --popover-foreground: 120 100% 90%;
+
+    --primary: 120 100% 50%;
+    --primary-foreground: 260 50% 8%;
+
+    --secondary: 280 100% 50%;
+    --secondary-foreground: 260 50% 8%;
+
+    --muted: 260 30% 25%;
+    --muted-foreground: 120 50% 60%;
+
+    --accent: 120 100% 50%;
+    --accent-foreground: 260 50% 8%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 260 50% 8%;
+
+    --border: 260 40% 20%;
+    --input: 260 40% 15%;
+    --ring: 120 100% 50%;
+
+    --radius: 0.25rem;
+
+    --neon-cyan: 120 100% 50%;
+    --neon-pink: 320 100% 50%;
+    --neon-purple: 280 100% 50%;
+    --neon-green: 120 100% 50%;
+
+    --sidebar-background: 260 40% 12%;
+    --sidebar-foreground: 120 100% 90%;
+    --sidebar-primary: 120 100% 50%;
+    --sidebar-primary-foreground: 260 50% 8%;
+    --sidebar-accent: 280 100% 50%;
+    --sidebar-accent-foreground: 260 50% 8%;
+    --sidebar-border: 260 40% 20%;
+    --sidebar-ring: 120 100% 50%;
+  }
+
+  .dark {
+    --background: 260 50% 8%;
+    --foreground: 120 100% 95%;
+
+    --card: 260 40% 12%;
+    --card-foreground: 120 100% 90%;
+
+    --popover: 260 40% 12%;
+    --popover-foreground: 120 100% 90%;
+
+    --primary: 120 100% 50%;
+    --primary-foreground: 260 50% 8%;
+
+    --secondary: 280 100% 50%;
+    --secondary-foreground: 260 50% 8%;
+
+    --muted: 260 30% 25%;
+    --muted-foreground: 120 50% 60%;
+
+    --accent: 120 100% 50%;
+    --accent-foreground: 260 50% 8%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 260 50% 8%;
+
+    --border: 260 40% 20%;
+    --input: 260 40% 15%;
+    --ring: 120 100% 50%;
+
+    --neon-cyan: 120 100% 50%;
+    --neon-pink: 320 100% 50%;
+    --neon-purple: 280 100% 50%;
+    --neon-green: 120 100% 50%;
+
+    --sidebar-background: 260 40% 12%;
+    --sidebar-foreground: 120 100% 90%;
+    --sidebar-primary: 120 100% 50%;
+    --sidebar-primary-foreground: 260 50% 8%;
+    --sidebar-accent: 280 100% 50%;
+    --sidebar-accent-foreground: 260 50% 8%;
+    --sidebar-border: 260 40% 20%;
+    --sidebar-ring: 120 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply dark;
+  }
+
+  body {
+    @apply bg-background text-foreground font-space-mono;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 0, 0.03) 0px,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      ),
+      radial-gradient(circle at 20% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(0, 200, 0, 0.1) 0%, transparent 50%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-orbitron;
+  }
+
+  :where(p, span, li, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+}
+
+@layer components {
+  .glow-text {
+    @apply text-neon-green drop-shadow-lg;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8), 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+
+  .glow-text-lg {
+    @apply text-neon-green drop-shadow-lg;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 1), 0 0 40px rgba(0, 255, 0, 0.6);
+  }
+
+  .neon-border {
+    @apply border border-neon-green;
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2), 0 0 20px rgba(0, 255, 0, 0.3);
+  }
+
+  .cyber-card {
+    @apply bg-card border border-neon-green rounded-sm backdrop-blur-sm;
+    box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1), 0 0 20px rgba(0, 255, 0, 0.2);
+  }
+
+  .cyber-card-hover {
+    @apply cyber-card transition-all duration-300 hover:shadow-neon-lg;
+  }
+
+  .grid-bg {
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 0, 0.02) 0px,
+        rgba(0, 255, 0, 0.02) 1px,
+        transparent 1px,
+        transparent 40px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(0, 255, 0, 0.02) 0px,
+        rgba(0, 255, 0, 0.02) 1px,
+        transparent 1px,
+        transparent 40px
+      );
+  }
+}
