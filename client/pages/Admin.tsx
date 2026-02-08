@@ -22,7 +22,7 @@ export default function Admin() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // ✅ FIXED: UPDATED TO THE NEW WORKING URL
-  const API_URL = "https://script.google.com/macros/s/AKfycby2O3qyr7bhAO1dAR9ksu8CBCzPKCjx-HCT_Q6QArcESi95l_I3iYGgbEgUVQUM2Js/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
 
   // Check session on load
   useEffect(() => {
