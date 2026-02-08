@@ -21,8 +21,8 @@ export default function Admin() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // YOUR NEW API LINK
-  const API_URL = "https://script.google.com/macros/s/AKfycbxtTgKCBUS31DVHMj3W1FTWbyQjU91BvALBdN9ZmDdKER-o845oG9M-ecoeBZVeOTSB/exec";
+  // ✅ FIXED: UPDATED TO THE NEW WORKING URL
+  const API_URL = "https://script.google.com/macros/s/AKfycby2O3qyr7bhAO1dAR9ksu8CBCzPKCjx-HCT_Q6QArcESi95l_I3iYGgbEgUVQUM2Js/exec";
 
   // Check session on load
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function Admin() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Use the 'readAll' action we created in the new script
+      // Use the 'readAll' action via GET (Fixes CORS)
       const response = await fetch(`${API_URL}?action=readAll`);
       const result = await response.json();
 
@@ -58,8 +58,7 @@ export default function Admin() {
     e.preventDefault();
     setIsVerifying(true);
 
-    // Simple Client-Side Lock (Since the sheet is public read-only)
-    // You can change "admin" to any password you want
+    // Simple Client-Side Lock
     setTimeout(() => {
       if (adminKey === "admin") {
         sessionStorage.setItem("codeArena_admin_auth", "true");
@@ -69,7 +68,7 @@ export default function Admin() {
         alert("ACCESS DENIED: Invalid Security Key");
       }
       setIsVerifying(false);
-    }, 800); // Fake delay for "hacking" effect
+    }, 800); 
   };
 
   const handleLogout = () => {
