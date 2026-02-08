@@ -376,10 +376,15 @@ export default function Wildcard() {
                   />
                 </div>
 
-                <button
-                  onClick={handleVerifyTeam}
+                <motion.button
+                  onClick={() => {
+                    soundManager.click();
+                    handleVerifyTeam();
+                  }}
                   disabled={isLoading || !validateTeamInput(teamInput)}
                   className="w-full px-6 py-3 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-neon disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   {isLoading ? (
                     <span className="animate-spin">⚙️</span>
@@ -387,7 +392,7 @@ export default function Wildcard() {
                     <Zap className="w-4 h-4 group-hover:animate-pulse" />
                   )}
                   {isLoading ? "Verifying..." : "Verify Team"}
-                </button>
+                </motion.button>
               </div>
             </div>
           ) : result ? (
@@ -413,25 +418,33 @@ export default function Wildcard() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 {currentRound === 2 && !drawnRounds.round3 && (
-                  <button
+                  <motion.button
                     onClick={() => {
+                      soundManager.click();
                       setCurrentRound(3);
                       setResult(null);
                       setCardPositions([0, 1, 2]);
                     }}
                     className="px-8 py-3 bg-neon-cyan text-black font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <Zap className="w-4 h-4" />
                     Next Round
-                  </button>
+                  </motion.button>
                 )}
-                <button
-                  onClick={handleReset}
+                <motion.button
+                  onClick={() => {
+                    soundManager.click();
+                    handleReset();
+                  }}
                   className="px-8 py-3 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-neon flex items-center justify-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   <RotateCcw className="w-4 h-4" />
                   Logout
-                </button>
+                </motion.button>
               </div>
             </div>
           ) : currentRound ? (
@@ -564,12 +577,18 @@ export default function Wildcard() {
 
               {/* Draw Button */}
               <div className="flex justify-center">
-                <button
+                <motion.button
                   onClick={performDraw}
                   disabled={isSpinning}
                   className="relative px-12 py-4 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold text-base uppercase tracking-wider overflow-hidden rounded-sm transition-all duration-300 hover:shadow-neon disabled:opacity-70 disabled:cursor-not-allowed group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  <div className="absolute inset-0 bg-neon-cyan opacity-0 group-hover:opacity-10 transition-all duration-300" />
+                  <motion.div
+                    className="absolute inset-0 bg-neon-cyan opacity-0 group-hover:opacity-10 transition-all duration-300"
+                    animate={isSpinning ? { opacity: [0.05, 0.15, 0.05] } : {}}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                  />
                   <span className="relative flex items-center gap-2">
                     {isSpinning ? (
                       <>
@@ -583,7 +602,7 @@ export default function Wildcard() {
                       </>
                     )}
                   </span>
-                </button>
+                </motion.button>
               </div>
 
               {/* Round Info */}
