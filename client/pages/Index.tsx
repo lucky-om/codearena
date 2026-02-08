@@ -320,12 +320,12 @@ export default function Index() {
               ].map((stat, i) => (
                 <motion.div
                   key={i}
-                  className="cyber-card p-4 group cursor-default hover:shadow-neon transition-all duration-300"
+                  className="cyber-card p-3 sm:p-4 group cursor-default hover:shadow-neon transition-all duration-300"
                   whileHover={{ y: -5 }}
                   variants={itemVariants}
                 >
                   <motion.div
-                    className="text-2xl sm:text-4xl font-orbitron glow-text mb-2 tracking-wider"
+                    className="text-xl sm:text-3xl font-orbitron glow-text mb-1 sm:mb-2 tracking-wider"
                     animate={{
                       scale: [1, 1.1, 1],
                     }}
@@ -337,7 +337,7 @@ export default function Index() {
                   >
                     {stat.number}
                   </motion.div>
-                  <p className="text-xs text-neon-cyan/70 font-space-mono">{stat.label}</p>
+                  <p className="text-[10px] sm:text-xs text-neon-cyan/70 font-space-mono">{stat.label}</p>
                 </motion.div>
               ))}
             </div>
