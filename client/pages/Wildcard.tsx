@@ -312,18 +312,36 @@ export default function Wildcard() {
       {/* Header */}
       <header className="border-b border-neon-cyan/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={() => soundManager.click()}>
             <ArrowLeft className="w-5 h-5 text-neon-cyan" />
             <h1 className="text-lg sm:text-xl font-orbitron font-bold glow-text">
               WILDCARD DRAW
             </h1>
           </Link>
-          {isVerified && (
-            <div className="text-right">
-              <p className="text-xs text-neon-cyan/70 font-space-mono">TEAM</p>
-              <p className="text-lg font-orbitron glow-text">{teamInput}</p>
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            {isVerified && (
+              <div className="text-right">
+                <p className="text-xs text-neon-cyan/70 font-space-mono">TEAM</p>
+                <p className="text-lg font-orbitron glow-text">{teamInput}</p>
+              </div>
+            )}
+            <motion.button
+              onClick={() => {
+                setSoundEnabled(!soundEnabled);
+                soundManager.click();
+              }}
+              className="p-2 rounded-sm border border-neon-cyan/50 hover:border-neon-cyan hover:shadow-neon transition-all duration-300 text-neon-cyan hover:bg-neon-cyan/10"
+              aria-label="Toggle sound"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {soundEnabled ? (
+                <Volume2 className="w-5 h-5" />
+              ) : (
+                <VolumeX className="w-5 h-5" />
+              )}
+            </motion.button>
+          </div>
         </div>
       </header>
 
