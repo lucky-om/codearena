@@ -309,10 +309,10 @@ export default function Index() {
 
           {/* Info Section - Enhanced Cards */}
           <motion.div
-            className="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-neon-cyan/20 space-y-4"
+            className="mt-8 sm:mt-16 pt-6 sm:pt-12 border-t border-neon-cyan/20 space-y-4"
             variants={containerVariants}
           >
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-center">
               {[
                 { number: "2", label: "Draws Per Team" },
                 { number: "3", label: "Card Types" },
