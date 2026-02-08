@@ -128,6 +128,20 @@ export default {
             opacity: "0.4",
           },
         },
+        "shuffle": {
+          "0%, 100%": {
+            transform: "translateX(0px) translateY(0px)",
+          },
+          "25%": {
+            transform: "translateX(20px) translateY(-10px)",
+          },
+          "50%": {
+            transform: "translateX(-20px) translateY(10px)",
+          },
+          "75%": {
+            transform: "translateX(15px) translateY(-5px)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -136,6 +150,7 @@ export default {
         "float": "float 6s ease-in-out infinite",
         "spin-slow": "spin-slow 8s linear infinite",
         "flicker": "flicker 4s ease-in-out infinite",
+        "shuffle": "shuffle 0.3s ease-in-out",
       },
     },
   },
