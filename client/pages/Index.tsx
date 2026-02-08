@@ -80,12 +80,12 @@ export default function Index() {
 
           <motion.button
             onClick={() => {
-              setSoundEnabled(!soundEnabled);
               soundManager.click();
+              setSoundEnabled(!soundEnabled);
             }}
             className="p-2 rounded-sm border border-neon-cyan/50 hover:border-neon-cyan hover:shadow-neon transition-all duration-300 text-neon-cyan hover:bg-neon-cyan/10"
             aria-label="Toggle sound"
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.1, onComplete: () => soundManager.hover() }}
             whileTap={{ scale: 0.95 }}
           >
             {soundEnabled ? (
