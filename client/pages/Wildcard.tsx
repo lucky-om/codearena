@@ -23,7 +23,7 @@ const CARD_EMOJIS: Record<CardType, string> = {
 };
 
 // ✅ API URL (Hardcoded to prevent .env issues)
-const API_URL = "//script.google.com/macros/s/AKfycbzsd4XsCsKCWnFxqPv4VyK6jZ_pEiLhqys9jsDeH4JmNKRhzMsYJgavbXLIX2nlxf5Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
 
 export default function Wildcard() {
   const { toast } = useToast();
