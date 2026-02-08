@@ -415,120 +415,118 @@ export default function Wildcard() {
                 </p>
               </div>
 
-              {/* Cards Grid - Casino Style Shuffle with Physical Movement */}
-              <div className="relative my-8 sm:my-12">
-                {/* Background Shuffle Effect */}
-                {isSpinning && (
-                  <motion.div
-                    className="absolute -inset-4 bg-gradient-to-r from-neon-green/10 via-neon-cyan/10 to-neon-purple/10 rounded-lg pointer-events-none"
-                    animate={{
-                      opacity: [0.3, 0.6, 0.3],
-                    }}
-                    transition={{
-                      duration: 0.3,
-                      repeat: Infinity,
-                      ease: "linear"
-                    }}
-                  />
-                )}
-
-                {/* Cards Container - Absolute positioning for movement */}
-                <div className="relative h-[240px] sm:h-[280px]">
-                  {[0, 1, 2].map((cardId) => {
-                    // Find where this card currently is in the positions array
-                    const displayPosition = cardPositions.indexOf(cardId);
+              {/* Cards Grid - Casino Style Shuffle with Visible Movement */}
+              <div className="my-8 sm:my-12">
+                <div className="relative flex justify-center items-stretch gap-4 sm:gap-6 h-auto min-h-[240px] sm:min-h-[280px]">
+                  {[0, 1, 2].map((position) => {
+                    const cardId = cardPositions[position];
                     const card = CARDS[cardId];
-
-                    // Calculate X offset: each position is ~25% (100% / 3 cards + gap)
-                    const xOffset = displayPosition * 110; // 110% accounts for gap
 
                     return (
                       <motion.div
-                        key={cardId}
+                        key={position}
+                        layout
+                        layoutId={`position-${position}`}
                         animate={{
-                          x: xOffset,
-                          y: 0,
+                          scale: isSpinning ? 0.95 : 1,
+                          filter: isSpinning ? "blur(0.5px)" : "blur(0px)",
                         }}
                         transition={{
-                          type: "tween",
+                          type: "spring",
+                          damping: 20,
+                          stiffness: 300,
+                          mass: 1,
                           duration: 0.25,
-                          ease: [0.25, 1, 0.5, 1], // Custom bezier curve for snappy movement
                         }}
-                        className={`absolute w-full sm:w-1/3 cyber-card p-8 h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group cursor-default transition-all duration-200 ${
-                          isSpinning ? "shadow-neon/40 shadow-lg" : "hover:shadow-neon"
+                        className={`cyber-card p-8 flex-1 flex flex-col items-center justify-center relative overflow-hidden group cursor-default w-full sm:max-w-xs ${
+                          isSpinning ? "shadow-neon/50" : "hover:shadow-neon"
                         }`}
-                        style={{
-                          filter: isSpinning ? "blur(0.5px) brightness(0.92)" : "blur(0px)",
-                          transform: isSpinning ? "scale(0.95)" : "scale(1)",
-                          transformOrigin: "center",
-                        }}
                       >
+                        {/* Card Background Glow */}
                         <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 via-transparent to-neon-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                        {/* Face-Down State - Locked */}
-                        {isSpinning ? (
+                        {/* Shuffle Pulse Effect */}
+                        {isSpinning && (
                           <motion.div
-                            className="relative z-10 text-center flex flex-col items-center justify-center h-full"
+                            className="absolute inset-0 bg-neon-green/5 rounded-sm"
                             animate={{
-                              scale: [1, 1.08, 1],
+                              opacity: [0, 0.3, 0],
                             }}
                             transition={{
                               duration: 0.3,
                               repeat: Infinity,
-                              type: "tween",
+                              ease: "easeInOut",
                             }}
-                          >
+                          />
+                        )}
+
+                        {/* Content */}
+                        <div className="relative z-10 text-center w-full">
+                          {isSpinning ? (
+                            // ✅ Face-Down: Locked Cards
                             <motion.div
-                              animate={{ rotate: [0, 180, 360] }}
+                              className="flex flex-col items-center justify-center h-full py-8"
+                              animate={{
+                                y: [0, -4, 0],
+                              }}
                               transition={{
                                 duration: 0.4,
                                 repeat: Infinity,
-                                ease: "linear"
+                                repeatDelay: 0,
+                                ease: "easeInOut",
                               }}
                             >
-                              <Lock className="w-14 h-14 text-neon-green mb-3" />
+                              <motion.div
+                                animate={{ rotateZ: isSpinning ? 360 : 0 }}
+                                transition={{
+                                  duration: 0.5,
+                                  repeat: Infinity,
+                                  ease: "linear",
+                                }}
+                              >
+                                <Lock className="w-12 h-12 text-neon-green mb-2" />
+                              </motion.div>
+                              <p className="text-sm text-neon-green font-orbitron font-bold tracking-wider">
+                                CARD {position + 1}
+                              </p>
+                              <p className="text-xs text-neon-cyan/60 font-space-mono mt-2">
+                                SHUFFLING
+                              </p>
                             </motion.div>
-                            <p className="text-xs text-neon-green font-orbitron tracking-wider font-bold">
-                              ● SHUFFLING ●
-                            </p>
-                            <p className="text-xs text-neon-cyan/60 font-space-mono mt-2">
-                              Card Position: {displayPosition + 1}
-                            </p>
-                          </motion.div>
-                        ) : (
-                          /* Face-Up State - Revealed */
-                          <motion.div
-                            className="relative z-10 text-center w-full"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5, ease: "easeOut" }}
-                          >
-                            <div className="text-5xl mb-4 animate-float">
-                              {CARD_EMOJIS[card.type]}
-                            </div>
-                            <h3 className="text-lg sm:text-xl font-orbitron glow-text">
-                              {card.label}
-                            </h3>
-                          </motion.div>
-                        )}
+                          ) : (
+                            // ✅ Face-Up: Revealed Cards
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.4, ease: "easeOut" }}
+                            >
+                              <div className="text-5xl mb-4 animate-float">
+                                {CARD_EMOJIS[card.type]}
+                              </div>
+                              <h3 className="text-lg sm:text-xl font-orbitron glow-text font-bold">
+                                {card.label}
+                              </h3>
+                            </motion.div>
+                          )}
+                        </div>
                       </motion.div>
                     );
                   })}
                 </div>
 
-                {/* Shuffle Progress Indicator */}
+                {/* Shuffle Status Bar */}
                 {isSpinning && (
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-neon-green via-neon-cyan to-neon-purple rounded-full"
+                    className="mt-6 h-1 bg-gradient-to-r from-transparent via-neon-green to-transparent rounded-full"
                     animate={{
-                      scaleX: [0.1, 1, 0.1],
+                      opacity: [0.3, 1, 0.3],
+                      scaleX: [0.8, 1, 0.8],
                     }}
                     transition={{
                       duration: 0.3,
                       repeat: Infinity,
-                      ease: "easeInOut"
+                      ease: "easeInOut",
                     }}
-                    style={{ transformOrigin: "left" }}
                   />
                 )}
               </div>
