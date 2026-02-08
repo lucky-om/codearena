@@ -47,10 +47,19 @@ export default function Wildcard() {
     const savedTeam = localStorage.getItem("codeArena_teamId");
     const savedRound2 = localStorage.getItem("codeArena_round2_drawn");
     const savedRound3 = localStorage.getItem("codeArena_round3_drawn");
+    const savedRound2Card = localStorage.getItem("codeArena_round2_card");
 
     if (savedTeam) {
       setTeamInput(savedTeam);
       setIsVerified(true);
+    }
+
+    // Load the round 2 card to prevent duplicate draws
+    if (savedRound2Card) {
+      const card = CARDS.find(c => c.label === savedRound2Card);
+      if (card) {
+        setRound2Card(card);
+      }
     }
 
     setDrawnRounds({
