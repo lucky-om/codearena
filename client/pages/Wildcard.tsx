@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { Zap, ArrowLeft } from "lucide-react";
+import { Zap, ArrowLeft, RotateCcw } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+// --- CONFIGURATION ---
 type CardType = "freeze" | "guess" | "out";
 type DrawResult = {
   type: CardType;
@@ -21,11 +22,13 @@ const CARD_EMOJIS: Record<CardType, string> = {
   out: "❌",
 };
 
-// ✅ FIX 1: Hardcoded API URL (Bypasses .env issues)
+// ✅ API URL (Hardcoded to prevent .env issues)
 const API_URL = "https://script.google.com/macros/s/AKfycbzsd4XsCsKCWnFxqPv4VyK6jZ_pEiLhqys9jsDeH4JmNKRhzMsYJgavbXLIX2nlxf5Q/exec";
 
 export default function Wildcard() {
   const { toast } = useToast();
+  
+  // State
   const [teamInput, setTeamInput] = useState("");
   const [isVerified, setIsVerified] = useState(false);
   const [currentRound, setCurrentRound] = useState<2 | 3 | null>(null);
@@ -77,7 +80,7 @@ export default function Wildcard() {
 
     setIsLoading(true);
     try {
-      // ✅ FIX 2: Use 'verify' action and hardcoded URL
+      // Action: Verify (Using GET to avoid CORS)
       const response = await fetch(`${API_URL}?action=verify&teamId=${teamInput}`);
 
       if (!response.ok) {
@@ -115,7 +118,6 @@ export default function Wildcard() {
           variant: "destructive",
         });
         setIsLoading(false);
-        // Still allow them to see status, but no round set
         setCurrentRound(null);
       } else {
         setCurrentRound(nextRound);
@@ -162,9 +164,9 @@ export default function Wildcard() {
 
     setResult(selectedCard);
 
-    // After animation, submit to backend
+    // Submit to backend
     try {
-      // ✅ FIX 3: Use GET request with 'save' action
+      // Action: Save (Using GET to avoid CORS)
       let url = `${API_URL}?action=save&teamId=${teamInput}`;
       
       if (currentRound === 2) {
@@ -173,7 +175,7 @@ export default function Wildcard() {
         url += `&round3=${encodeURIComponent(selectedCard.label)}`;
       }
 
-      const response = await fetch(url); // Default is GET
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
@@ -196,14 +198,6 @@ export default function Wildcard() {
         ...prev,
         [currentRound === 2 ? "round2" : "round3"]: true,
       }));
-
-      // Determine next round locally for UI update
-      if (currentRound === 2 && !drawnRounds.round3) {
-        // Prepare for next round after a delay
-        // Note: You might want to force them to click "Next Round" button instead
-      } else {
-        // All done
-      }
 
       toast({
         title: "Result Recorded",
@@ -229,10 +223,11 @@ export default function Wildcard() {
     localStorage.removeItem("codeArena_teamId");
     localStorage.removeItem("codeArena_round2_drawn");
     localStorage.removeItem("codeArena_round3_drawn");
+    window.location.reload();
   };
 
   return (
-    <div className="min-h-screen grid-bg overflow-hidden">
+    <div className="min-h-screen grid-bg overflow-hidden text-white font-space-mono">
       {/* Header */}
       <header className="border-b border-neon-cyan/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex items-center justify-between">
@@ -300,33 +295,21 @@ export default function Wildcard() {
             // Result Display
             <div className="space-y-8 text-center">
               <div>
-                <h2 className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4">
-                  Your Wildcard
-                </h2>
-                <p className="text-neon-cyan/70 text-sm sm:text-base">
-                  Round {currentRound}
-                </p>
-              </div>
-
-              <div className="cyber-card p-12 sm:p-16 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-transparent to-neon-cyan/20 opacity-50" />
-                <div className="relative z-10 text-center">
-                  <div className="text-7xl sm:text-8xl mb-6 animate-bounce">
-                    {CARD_EMOJIS[result.type]}
-                  </div>
-                  <h3 className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4">
-                    {result.label}
-                  </h3>
-                  <p className="text-neon-cyan/70 text-xs sm:text-sm font-space-mono">
-                    Round {currentRound} Result
-                  </p>
+                <h2 className="text-2xl font-orbitron text-neon-green mb-2">ROUND {currentRound} RESULT</h2>
+                <div className="cyber-card p-12 sm:p-16 relative overflow-hidden group">
+                   <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-transparent to-neon-cyan/20 opacity-50" />
+                   <div className="relative z-10">
+                      <div className="text-7xl sm:text-8xl mb-6 animate-bounce">
+                        {CARD_EMOJIS[result.type]}
+                      </div>
+                      <h3 className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4">
+                        {result.label}
+                      </h3>
+                      <p className="text-neon-cyan/70 text-xs sm:text-sm font-space-mono">
+                        Saved to Database
+                      </p>
+                   </div>
                 </div>
-
-                {/* Corner accents */}
-                <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-neon-cyan/50" />
-                <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-neon-cyan/50" />
-                <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-neon-cyan/50" />
-                <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-neon-cyan/50" />
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -336,7 +319,7 @@ export default function Wildcard() {
                       setCurrentRound(3);
                       setResult(null);
                     }}
-                    className="px-8 py-3 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-neon flex items-center justify-center gap-2"
+                    className="px-8 py-3 bg-neon-cyan text-black font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
                   >
                     <Zap className="w-4 h-4" />
                     Next Round
@@ -346,18 +329,10 @@ export default function Wildcard() {
                   onClick={handleReset}
                   className="px-8 py-3 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-neon flex items-center justify-center gap-2"
                 >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back Home
+                  <RotateCcw className="w-4 h-4" />
+                  Logout
                 </button>
               </div>
-
-              {drawnRounds.round2 && drawnRounds.round3 && (
-                <div className="p-4 bg-card border border-neon-cyan/50 rounded-sm">
-                  <p className="text-neon-cyan/80 font-space-mono text-sm">
-                    ✓ All draws completed! Your wildcards are locked in.
-                  </p>
-                </div>
-              )}
             </div>
           ) : currentRound ? (
             // Draw Interface
@@ -367,7 +342,7 @@ export default function Wildcard() {
                   Round {currentRound}
                 </h2>
                 <p className="text-neon-cyan/70 text-sm sm:text-base">
-                  Select your wildcard
+                  Spin to reveal your fate
                 </p>
               </div>
 
@@ -387,12 +362,6 @@ export default function Wildcard() {
                         {card.label}
                       </h3>
                     </div>
-
-                    {/* Corner accents */}
-                    <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-neon-cyan/50" />
-                    <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-neon-cyan/50" />
-                    <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-neon-cyan/50" />
-                    <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-neon-cyan/50" />
                   </div>
                 ))}
               </div>
@@ -413,23 +382,12 @@ export default function Wildcard() {
                       </>
                     ) : (
                       <>
-                        Spin to Draw
+                        SPIN NOW
                         <Zap className="w-5 h-5 animate-pulse" />
                       </>
                     )}
                   </span>
                 </button>
-              </div>
-
-              {/* Draw Counter */}
-              <div className="text-center text-xs text-neon-cyan/50 font-space-mono space-y-2">
-                <p>
-                  {drawnRounds.round2 && drawnRounds.round3
-                    ? "✓ All rounds completed"
-                    : drawnRounds.round2
-                      ? "✓ Round 2 drawn • Round 3 pending"
-                      : "✓ Round 2 pending • Round 3 pending"}
-                </p>
               </div>
             </div>
           ) : null}
@@ -439,7 +397,7 @@ export default function Wildcard() {
       {/* Footer */}
       <footer className="border-t border-neon-cyan/30 backdrop-blur-sm text-center py-4">
         <p className="text-xs text-neon-cyan/50 font-space-mono">
-          CODE ARENA © 2026 | SDJ International College
+          INFERNO'26  |  CODE ARENA © 2026  |  SDJ International College
         </p>
       </footer>
     </div>
