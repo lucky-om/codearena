@@ -1,5 +1,12 @@
 import { Link } from "react-router-dom";
-import { Zap, ArrowLeft, RotateCcw, Lock, Volume2, VolumeX } from "lucide-react";
+import {
+  Zap,
+  ArrowLeft,
+  RotateCcw,
+  Lock,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -25,14 +32,15 @@ const CARD_EMOJIS: Record<CardType, string> = {
 };
 
 // ✅ API URL (Hardcoded to prevent .env issues)
-const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
 
 // ✅ Helper function to get random card, optionally excluding a type
 const getRandomCard = (excludeType: CardType | null = null): DrawResult => {
   const availableCards = excludeType
-    ? CARDS.filter(card => card.type !== excludeType)
+    ? CARDS.filter((card) => card.type !== excludeType)
     : CARDS;
-  
+
   const array = new Uint32Array(1);
   crypto.getRandomValues(array);
   const resultIndex = array[0] % availableCards.length;
@@ -59,7 +67,7 @@ const generateShuffleSequence = (duration: number = 3000): number[][] => {
 
 export default function Wildcard() {
   const { toast } = useToast();
-  
+
   // State
   const [teamInput, setTeamInput] = useState("");
   const [isVerified, setIsVerified] = useState(false);
@@ -67,11 +75,14 @@ export default function Wildcard() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<DrawResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [drawnRounds, setDrawnRounds] = useState<{ round2: boolean; round3: boolean }>({
+  const [drawnRounds, setDrawnRounds] = useState<{
+    round2: boolean;
+    round3: boolean;
+  }>({
     round2: false,
     round3: false,
   });
-  
+
   // Face-down state & position tracking for shuffle
   const [cardPositions, setCardPositions] = useState<number[]>([0, 1, 2]);
   const [round2CardType, setRound2CardType] = useState<CardType | null>(null);
@@ -89,7 +100,9 @@ export default function Wildcard() {
     const savedTeam = localStorage.getItem("codeArena_teamId");
     const savedRound2 = localStorage.getItem("codeArena_round2_drawn");
     const savedRound3 = localStorage.getItem("codeArena_round3_drawn");
-    const savedRound2CardType = localStorage.getItem("codeArena_round2_card_type") as CardType | null;
+    const savedRound2CardType = localStorage.getItem(
+      "codeArena_round2_card_type",
+    ) as CardType | null;
 
     if (savedTeam) {
       setTeamInput(savedTeam);
@@ -150,7 +163,9 @@ export default function Wildcard() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}?action=verify&teamId=${teamInput}`);
+      const response = await fetch(
+        `${API_URL}?action=verify&teamId=${teamInput}`,
+      );
 
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
@@ -200,7 +215,6 @@ export default function Wildcard() {
         round2: round2Filled,
         round3: round3Filled,
       });
-
     } catch (error) {
       console.error("Error verifying team:", error);
       toast({
@@ -235,13 +249,15 @@ export default function Wildcard() {
     soundManager.reveal();
 
     // Get random card with exclusion logic
-    const selectedCard = getRandomCard(currentRound === 3 ? round2CardType : null);
+    const selectedCard = getRandomCard(
+      currentRound === 3 ? round2CardType : null,
+    );
     setResult(selectedCard);
 
     // Submit to backend
     try {
       let url = `${API_URL}?action=save&teamId=${teamInput}`;
-      
+
       if (currentRound === 2) {
         url += `&round2=${encodeURIComponent(selectedCard.label)}`;
       } else {
@@ -312,7 +328,11 @@ export default function Wildcard() {
       {/* Header */}
       <header className="border-b border-neon-cyan/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" onClick={() => soundManager.click()}>
+          <Link
+            to="/"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            onClick={() => soundManager.click()}
+          >
             <ArrowLeft className="w-5 h-5 text-neon-cyan" />
             <h1 className="text-lg sm:text-xl font-orbitron font-bold glow-text">
               WILDCARD DRAW
@@ -321,7 +341,9 @@ export default function Wildcard() {
           <div className="flex items-center gap-4">
             {isVerified && (
               <div className="text-right">
-                <p className="text-xs text-neon-cyan/70 font-space-mono">TEAM</p>
+                <p className="text-xs text-neon-cyan/70 font-space-mono">
+                  TEAM
+                </p>
                 <p className="text-lg font-orbitron glow-text">{teamInput}</p>
               </div>
             )}
@@ -369,7 +391,9 @@ export default function Wildcard() {
                     type="text"
                     inputMode="numeric"
                     value={teamInput}
-                    onChange={(e) => setTeamInput(e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) =>
+                      setTeamInput(e.target.value.replace(/\D/g, ""))
+                    }
                     placeholder="e.g., 101"
                     className="w-full px-4 py-3 bg-card border-2 border-neon-cyan/50 text-neon-cyan placeholder-neon-cyan/30 font-space-mono focus:outline-none focus:border-neon-cyan focus:shadow-neon transition-all duration-300"
                     onKeyDown={(e) => e.key === "Enter" && handleVerifyTeam()}
@@ -689,7 +713,11 @@ export default function Wildcard() {
               {currentRound === 3 && round2CardType && (
                 <div className="text-center p-4 border border-neon-cyan/30 rounded-sm bg-neon-cyan/5">
                   <p className="text-xs text-neon-cyan/70 font-space-mono">
-                    ⚠️ Round 3 Restriction: You drew <span className="text-neon-green font-bold">{CARDS.find(c => c.type === round2CardType)?.label}</span> in Round 2
+                    ⚠️ Round 3 Restriction: You drew{" "}
+                    <span className="text-neon-green font-bold">
+                      {CARDS.find((c) => c.type === round2CardType)?.label}
+                    </span>{" "}
+                    in Round 2
                   </p>
                   <p className="text-xs text-neon-cyan/70 font-space-mono mt-1">
                     A different card will be selected in this round
@@ -704,7 +732,7 @@ export default function Wildcard() {
       {/* Footer */}
       <footer className="border-t border-neon-cyan/30 backdrop-blur-sm text-center py-4">
         <p className="text-xs text-neon-cyan/50 font-space-mono">
-          INFERNO'26  |  CODE ARENA © 2026  |  SDJ International College
+          INFERNO'26 | CODE ARENA © 2026 | SDJ International College
         </p>
       </footer>
     </div>

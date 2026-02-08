@@ -106,7 +106,10 @@ export default function Index() {
           animate="visible"
         >
           {/* Title Section */}
-          <motion.div className="text-center mb-12 sm:mb-16" variants={itemVariants}>
+          <motion.div
+            className="text-center mb-12 sm:mb-16"
+            variants={itemVariants}
+          >
             <div className="mb-6 sm:mb-8">
               {/* Animated title with gradient effect */}
               <motion.div
@@ -143,7 +146,9 @@ export default function Index() {
                 <p className="tracking-widest">WILDCARD DRAW SYSTEM</p>
                 <Sparkles className="w-4 h-4 text-neon-purple" />
               </motion.div>
-              <p className="text-neon-purple/70">Round 2 & Round 3 • 100% Random Selection</p>
+              <p className="text-neon-purple/70">
+                Round 2 & Round 3 • 100% Random Selection
+              </p>
             </motion.div>
           </motion.div>
 
@@ -298,7 +303,11 @@ export default function Index() {
                   Begin Draw
                   <motion.span
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   >
                     <Zap className="w-5 h-5" />
                   </motion.span>
@@ -337,7 +346,9 @@ export default function Index() {
                   >
                     {stat.number}
                   </motion.div>
-                  <p className="text-[10px] sm:text-xs text-neon-cyan/70 font-space-mono">{stat.label}</p>
+                  <p className="text-[10px] sm:text-xs text-neon-cyan/70 font-space-mono">
+                    {stat.label}
+                  </p>
                 </motion.div>
               ))}
             </div>
