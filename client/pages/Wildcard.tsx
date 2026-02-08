@@ -79,6 +79,11 @@ export default function Wildcard() {
   const [currentShuffleStep, setCurrentShuffleStep] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  // Initialize sound manager
+  useEffect(() => {
+    soundManager.setEnabled(soundEnabled);
+  }, [soundEnabled]);
+
   // Load state from localStorage on mount
   useEffect(() => {
     const savedTeam = localStorage.getItem("codeArena_teamId");
