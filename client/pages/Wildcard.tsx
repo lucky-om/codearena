@@ -242,9 +242,11 @@ export default function Wildcard() {
     setIsVerified(false);
     setCurrentRound(null);
     setResult(null);
+    setRound2Card(null);
     localStorage.removeItem("codeArena_teamId");
     localStorage.removeItem("codeArena_round2_drawn");
     localStorage.removeItem("codeArena_round3_drawn");
+    localStorage.removeItem("codeArena_round2_card");
     window.location.reload();
   };
 
