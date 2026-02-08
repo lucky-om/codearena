@@ -29,8 +29,8 @@ jobs:
         run: npm run build
         env:
           # Failsafe: Uses your secret if set, otherwise uses the hardcoded link you shared
-          VITE_SHEET_API_URL: ${{ secrets.VITE_SHEET_API_URL || 'https://script.google.com/macros/s/AKfycbxkHvk2KMAkNjmuAD4w7uxezVb9SXv0mzcoeiC08UEqTm9LHzwLhoFI2pX47Bcs9VHk/exec' }}
-          VITE_ADMIN_KEY: ${{ secrets.VITE_ADMIN_KEY || 'LUCKY' }}
+          VITE_SHEET_API_URL: ${{ secrets.VITE_SHEET_API_URL || 'https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec' }}
+          VITE_ADMIN_KEY: ${{ secrets.VITE_ADMIN_KEY || 'admin' }}
 
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
