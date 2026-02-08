@@ -149,11 +149,11 @@ export default function Index() {
 
           {/* Card Display - Premium Animation */}
           <motion.div
-            className="flex items-center justify-center mb-12 sm:mb-16"
+            className="flex items-center justify-center mb-8 sm:mb-16"
             variants={itemVariants}
           >
             <motion.div
-              className="w-full max-w-sm relative"
+              className="w-full max-w-xs sm:max-w-sm relative"
               whileHover={{ scale: 1.05 }}
               onHoverStart={() => soundManager.hover()}
             >
