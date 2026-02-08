@@ -589,7 +589,7 @@ export default function Wildcard() {
                           {isSpinning ? (
                             // ✅ Face-Down: Locked Cards
                             <motion.div
-                              className="flex flex-col items-center justify-center h-full py-8"
+                              className="flex flex-col items-center justify-center h-full py-4 sm:py-8"
                               animate={{
                                 y: [0, -4, 0],
                               }}
@@ -608,12 +608,12 @@ export default function Wildcard() {
                                   ease: "linear",
                                 }}
                               >
-                                <Lock className="w-12 h-12 text-neon-green mb-2" />
+                                <Lock className="w-10 sm:w-12 h-10 sm:h-12 text-neon-green mb-1 sm:mb-2" />
                               </motion.div>
-                              <p className="text-sm text-neon-green font-orbitron font-bold tracking-wider">
+                              <p className="text-xs sm:text-sm text-neon-green font-orbitron font-bold tracking-wider">
                                 CARD {position + 1}
                               </p>
-                              <p className="text-xs text-neon-cyan/60 font-space-mono mt-2">
+                              <p className="text-[10px] sm:text-xs text-neon-cyan/60 font-space-mono mt-1 sm:mt-2">
                                 SHUFFLING
                               </p>
                             </motion.div>
