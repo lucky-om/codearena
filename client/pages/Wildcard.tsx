@@ -77,6 +77,7 @@ export default function Wildcard() {
   const [round2CardType, setRound2CardType] = useState<CardType | null>(null);
   const [shuffleSequence, setShuffleSequence] = useState<number[][]>([]);
   const [currentShuffleStep, setCurrentShuffleStep] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Load state from localStorage on mount
   useEffect(() => {
