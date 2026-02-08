@@ -216,6 +216,9 @@ export default function Wildcard() {
   const performDraw = async () => {
     if (!isVerified || currentRound === null) return;
 
+    // Start shuffle sound
+    soundManager.shuffle();
+
     // Generate shuffle sequence before starting
     const sequence = generateShuffleSequence(3000);
     setShuffleSequence(sequence);
@@ -227,6 +230,9 @@ export default function Wildcard() {
 
     // Wait for shuffle animation to complete (3 seconds)
     await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    // Play reveal sound
+    soundManager.reveal();
 
     // Get random card with exclusion logic
     const selectedCard = getRandomCard(currentRound === 3 ? round2CardType : null);
