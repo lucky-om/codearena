@@ -415,57 +415,93 @@ export default function Wildcard() {
                 </p>
               </div>
 
-              {/* Cards Grid - Casino Style Shuffle */}
+              {/* Cards Grid - Casino Style Shuffle with Physical Movement */}
               <div className="relative my-8 sm:my-12">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                  {[0, 1, 2].map((position) => {
-                    const cardIndex = cardPositions[position];
-                    const card = CARDS[cardIndex];
+                {/* Background Shuffle Effect */}
+                {isSpinning && (
+                  <motion.div
+                    className="absolute -inset-4 bg-gradient-to-r from-neon-green/10 via-neon-cyan/10 to-neon-purple/10 rounded-lg pointer-events-none"
+                    animate={{
+                      opacity: [0.3, 0.6, 0.3],
+                    }}
+                    transition={{
+                      duration: 0.3,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                )}
+
+                {/* Cards Container - Absolute positioning for movement */}
+                <div className="relative h-[240px] sm:h-[280px]">
+                  {[0, 1, 2].map((cardId) => {
+                    // Find where this card currently is in the positions array
+                    const displayPosition = cardPositions.indexOf(cardId);
+                    const card = CARDS[cardId];
+
+                    // Calculate X offset: each position is ~25% (100% / 3 cards + gap)
+                    const xOffset = displayPosition * 110; // 110% accounts for gap
 
                     return (
                       <motion.div
-                        key={position}
+                        key={cardId}
                         animate={{
-                          x: 0,
-                          opacity: 1,
+                          x: xOffset,
+                          y: 0,
                         }}
                         transition={{
                           type: "tween",
                           duration: 0.25,
-                          ease: [0.25, 1, 0.5, 1],
+                          ease: [0.25, 1, 0.5, 1], // Custom bezier curve for snappy movement
                         }}
-                        className={`cyber-card p-8 h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group cursor-default ${
-                          isSpinning ? "hover:shadow-neon/50 shadow-neon/30" : "hover:shadow-neon"
+                        className={`absolute w-full sm:w-1/3 cyber-card p-8 h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group cursor-default transition-all duration-200 ${
+                          isSpinning ? "shadow-neon/40 shadow-lg" : "hover:shadow-neon"
                         }`}
                         style={{
-                          filter: isSpinning ? "blur(0.5px) brightness(0.95)" : "blur(0px)",
-                          transform: isSpinning ? "scale(0.98)" : "scale(1)",
+                          filter: isSpinning ? "blur(0.5px) brightness(0.92)" : "blur(0px)",
+                          transform: isSpinning ? "scale(0.95)" : "scale(1)",
+                          transformOrigin: "center",
                         }}
                       >
                         <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 via-transparent to-neon-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                        {/* Face-Down State (Shuffling) */}
+                        {/* Face-Down State - Locked */}
                         {isSpinning ? (
                           <motion.div
                             className="relative z-10 text-center flex flex-col items-center justify-center h-full"
-                            animate={{ scale: [1, 1.05, 1] }}
+                            animate={{
+                              scale: [1, 1.08, 1],
+                            }}
                             transition={{
                               duration: 0.3,
                               repeat: Infinity,
-                              repeatDelay: 0.05
+                              type: "tween",
                             }}
                           >
-                            <Lock className="w-12 h-12 text-neon-green mb-2 animate-pulse" />
-                            <p className="text-xs text-neon-cyan/70 font-orbitron tracking-wider">CARD {position + 1}</p>
-                            <p className="text-xs text-neon-purple/70 font-space-mono mt-2">LOCKED</p>
+                            <motion.div
+                              animate={{ rotate: [0, 180, 360] }}
+                              transition={{
+                                duration: 0.4,
+                                repeat: Infinity,
+                                ease: "linear"
+                              }}
+                            >
+                              <Lock className="w-14 h-14 text-neon-green mb-3" />
+                            </motion.div>
+                            <p className="text-xs text-neon-green font-orbitron tracking-wider font-bold">
+                              ● SHUFFLING ●
+                            </p>
+                            <p className="text-xs text-neon-cyan/60 font-space-mono mt-2">
+                              Card Position: {displayPosition + 1}
+                            </p>
                           </motion.div>
                         ) : (
-                          /* Face-Up State (After Spin) */
+                          /* Face-Up State - Revealed */
                           <motion.div
-                            className="relative z-10 text-center"
-                            initial={{ opacity: 0, rotateY: -180 }}
-                            animate={{ opacity: 1, rotateY: 0 }}
-                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            className="relative z-10 text-center w-full"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
                           >
                             <div className="text-5xl mb-4 animate-float">
                               {CARD_EMOJIS[card.type]}
@@ -480,18 +516,19 @@ export default function Wildcard() {
                   })}
                 </div>
 
-                {/* Shuffle Intensity Indicator */}
+                {/* Shuffle Progress Indicator */}
                 {isSpinning && (
                   <motion.div
-                    className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-neon-green via-neon-cyan to-neon-purple"
+                    className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-neon-green via-neon-cyan to-neon-purple rounded-full"
                     animate={{
-                      scaleX: [0, 1, 0],
-                      opacity: [0.5, 1, 0.5]
+                      scaleX: [0.1, 1, 0.1],
                     }}
                     transition={{
                       duration: 0.3,
-                      repeat: Infinity
+                      repeat: Infinity,
+                      ease: "easeInOut"
                     }}
+                    style={{ transformOrigin: "left" }}
                   />
                 )}
               </div>
