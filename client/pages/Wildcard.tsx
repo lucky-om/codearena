@@ -373,7 +373,9 @@ export default function Wildcard() {
                 {CARDS.map((card, index) => (
                   <div
                     key={index}
-                    className="cyber-card p-8 h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-neon transition-all duration-300 cursor-default"
+                    className={`cyber-card p-8 h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-neon transition-all duration-300 cursor-default ${
+                      isShuffle ? "animate-shuffle" : ""
+                    }`}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 via-transparent to-neon-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="relative z-10 text-center">
