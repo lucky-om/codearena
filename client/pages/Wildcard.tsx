@@ -162,16 +162,25 @@ export default function Wildcard() {
     if (!isVerified || currentRound === null) return;
 
     setIsSpinning(true);
+    setIsShuffle(true);
     setResult(null);
 
-    // Simulate spin animation duration
+    // Simulate spin animation duration with shuffle effect
     await new Promise((resolve) => setTimeout(resolve, 2000));
+    setIsShuffle(false);
+
+    // Determine available cards based on round
+    let availableCards = CARDS;
+    if (currentRound === 3 && round2Card) {
+      // Exclude the card drawn in round 2 for round 3
+      availableCards = CARDS.filter(card => card.type !== round2Card.type);
+    }
 
     // Use cryptographically secure random selection
     const array = new Uint32Array(1);
     crypto.getRandomValues(array);
-    const resultIndex = array[0] % 3;
-    const selectedCard = CARDS[resultIndex];
+    const resultIndex = array[0] % availableCards.length;
+    const selectedCard = availableCards[resultIndex];
 
     setResult(selectedCard);
 
@@ -179,7 +188,7 @@ export default function Wildcard() {
     try {
       // Action: Save (Using GET to avoid CORS)
       let url = `${API_URL}?action=save&teamId=${teamInput}`;
-      
+
       if (currentRound === 2) {
         url += `&round2=${encodeURIComponent(selectedCard.label)}`;
       } else {
@@ -201,6 +210,8 @@ export default function Wildcard() {
       // Update localStorage
       if (currentRound === 2) {
         localStorage.setItem("codeArena_round2_drawn", "true");
+        localStorage.setItem("codeArena_round2_card", selectedCard.label);
+        setRound2Card(selectedCard);
       } else {
         localStorage.setItem("codeArena_round3_drawn", "true");
       }
