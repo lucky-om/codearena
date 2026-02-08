@@ -27,7 +27,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
 
 export default function Wildcard() {
   const { toast } = useToast();
-  
+
   // State
   const [teamInput, setTeamInput] = useState("");
   const [isVerified, setIsVerified] = useState(false);
@@ -39,6 +39,8 @@ export default function Wildcard() {
     round2: false,
     round3: false,
   });
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [round2Card, setRound2Card] = useState<DrawResult | null>(null);
 
   // Load state from localStorage on mount
   useEffect(() => {
