@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { Zap, ArrowLeft, RotateCcw } from "lucide-react";
+import { Zap, ArrowLeft, RotateCcw, Lock } from "lucide-react";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
 // --- CONFIGURATION ---
@@ -25,9 +26,39 @@ const CARD_EMOJIS: Record<CardType, string> = {
 // ✅ API URL (Hardcoded to prevent .env issues)
 const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
 
+// ✅ Helper function to get random card, optionally excluding a type
+const getRandomCard = (excludeType: CardType | null = null): DrawResult => {
+  const availableCards = excludeType
+    ? CARDS.filter(card => card.type !== excludeType)
+    : CARDS;
+  
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  const resultIndex = array[0] % availableCards.length;
+  return availableCards[resultIndex];
+};
+
+// ✅ Shuffle position swap logic
+const generateShuffleSequence = (duration: number = 3000): number[][] => {
+  const sequence: number[][] = [];
+  const interval = 300;
+  const steps = Math.floor(duration / interval);
+
+  for (let i = 0; i < steps; i++) {
+    // Random permutation of [0, 1, 2] positions
+    const positions = [0, 1, 2];
+    for (let j = positions.length - 1; j > 0; j--) {
+      const k = Math.floor(Math.random() * (j + 1));
+      [positions[j], positions[k]] = [positions[k], positions[j]];
+    }
+    sequence.push(positions);
+  }
+  return sequence;
+};
+
 export default function Wildcard() {
   const { toast } = useToast();
-
+  
   // State
   const [teamInput, setTeamInput] = useState("");
   const [isVerified, setIsVerified] = useState(false);
@@ -39,27 +70,28 @@ export default function Wildcard() {
     round2: false,
     round3: false,
   });
-  const [isShuffle, setIsShuffle] = useState(false);
-  const [round2Card, setRound2Card] = useState<DrawResult | null>(null);
+  
+  // Face-down state & position tracking for shuffle
+  const [cardPositions, setCardPositions] = useState<number[]>([0, 1, 2]);
+  const [round2CardType, setRound2CardType] = useState<CardType | null>(null);
+  const [shuffleSequence, setShuffleSequence] = useState<number[][]>([]);
+  const [currentShuffleStep, setCurrentShuffleStep] = useState(0);
 
   // Load state from localStorage on mount
   useEffect(() => {
     const savedTeam = localStorage.getItem("codeArena_teamId");
     const savedRound2 = localStorage.getItem("codeArena_round2_drawn");
     const savedRound3 = localStorage.getItem("codeArena_round3_drawn");
-    const savedRound2Card = localStorage.getItem("codeArena_round2_card");
+    const savedRound2CardType = localStorage.getItem("codeArena_round2_card_type") as CardType | null;
 
     if (savedTeam) {
       setTeamInput(savedTeam);
       setIsVerified(true);
     }
 
-    // Load the round 2 card to prevent duplicate draws
-    if (savedRound2Card) {
-      const card = CARDS.find(c => c.label === savedRound2Card);
-      if (card) {
-        setRound2Card(card);
-      }
+    // Load the round 2 card type to prevent duplicate draws
+    if (savedRound2CardType) {
+      setRound2CardType(savedRound2CardType);
     }
 
     setDrawnRounds({
@@ -74,6 +106,26 @@ export default function Wildcard() {
       setCurrentRound(3);
     }
   }, []);
+
+  // Shuffle animation loop
+  useEffect(() => {
+    if (!isSpinning || shuffleSequence.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentShuffleStep((prev) => {
+        const nextStep = prev + 1;
+        if (nextStep < shuffleSequence.length) {
+          setCardPositions(shuffleSequence[nextStep]);
+          return nextStep;
+        } else {
+          clearInterval(interval);
+          return prev;
+        }
+      });
+    }, 300); // Swap every 300ms
+
+    return () => clearInterval(interval);
+  }, [isSpinning, shuffleSequence]);
 
   const validateTeamInput = (input: string): boolean => {
     return /^\d+$/.test(input) && input.length > 0;
@@ -91,7 +143,6 @@ export default function Wildcard() {
 
     setIsLoading(true);
     try {
-      // Action: Verify (Using GET to avoid CORS)
       const response = await fetch(`${API_URL}?action=verify&teamId=${teamInput}`);
 
       if (!response.ok) {
@@ -110,11 +161,9 @@ export default function Wildcard() {
         return;
       }
 
-      // Check existing data from Sheet
       const round2Filled = !!data.data.round2;
       const round3Filled = !!data.data.round3;
 
-      // Determine next round logic
       let nextRound: 2 | 3 | null = null;
       if (!round2Filled) {
         nextRound = 2;
@@ -138,7 +187,6 @@ export default function Wildcard() {
         });
       }
 
-      // Update local state
       localStorage.setItem("codeArena_teamId", teamInput);
       setIsVerified(true);
       setDrawnRounds({
@@ -161,34 +209,26 @@ export default function Wildcard() {
   const performDraw = async () => {
     if (!isVerified || currentRound === null) return;
 
+    // Generate shuffle sequence before starting
+    const sequence = generateShuffleSequence(3000);
+    setShuffleSequence(sequence);
+    setCurrentShuffleStep(0);
+    setCardPositions([0, 1, 2]);
+
     setIsSpinning(true);
-    setIsShuffle(true);
     setResult(null);
 
-    // Simulate spin animation duration with shuffle effect
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsShuffle(false);
+    // Wait for shuffle animation to complete (3 seconds)
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    // Determine available cards based on round
-    let availableCards = CARDS;
-    if (currentRound === 3 && round2Card) {
-      // Exclude the card drawn in round 2 for round 3
-      availableCards = CARDS.filter(card => card.type !== round2Card.type);
-    }
-
-    // Use cryptographically secure random selection
-    const array = new Uint32Array(1);
-    crypto.getRandomValues(array);
-    const resultIndex = array[0] % availableCards.length;
-    const selectedCard = availableCards[resultIndex];
-
+    // Get random card with exclusion logic
+    const selectedCard = getRandomCard(currentRound === 3 ? round2CardType : null);
     setResult(selectedCard);
 
     // Submit to backend
     try {
-      // Action: Save (Using GET to avoid CORS)
       let url = `${API_URL}?action=save&teamId=${teamInput}`;
-
+      
       if (currentRound === 2) {
         url += `&round2=${encodeURIComponent(selectedCard.label)}`;
       } else {
@@ -210,8 +250,8 @@ export default function Wildcard() {
       // Update localStorage
       if (currentRound === 2) {
         localStorage.setItem("codeArena_round2_drawn", "true");
-        localStorage.setItem("codeArena_round2_card", selectedCard.label);
-        setRound2Card(selectedCard);
+        localStorage.setItem("codeArena_round2_card_type", selectedCard.type);
+        setRound2CardType(selectedCard.type);
       } else {
         localStorage.setItem("codeArena_round3_drawn", "true");
       }
@@ -234,6 +274,9 @@ export default function Wildcard() {
       });
     } finally {
       setIsSpinning(false);
+      setShuffleSequence([]);
+      setCurrentShuffleStep(0);
+      setCardPositions([0, 1, 2]);
     }
   };
 
@@ -242,11 +285,12 @@ export default function Wildcard() {
     setIsVerified(false);
     setCurrentRound(null);
     setResult(null);
-    setRound2Card(null);
+    setRound2CardType(null);
+    setCardPositions([0, 1, 2]);
     localStorage.removeItem("codeArena_teamId");
     localStorage.removeItem("codeArena_round2_drawn");
     localStorage.removeItem("codeArena_round3_drawn");
-    localStorage.removeItem("codeArena_round2_card");
+    localStorage.removeItem("codeArena_round2_card_type");
     window.location.reload();
   };
 
@@ -321,18 +365,18 @@ export default function Wildcard() {
               <div>
                 <h2 className="text-2xl font-orbitron text-neon-green mb-2">ROUND {currentRound} RESULT</h2>
                 <div className="cyber-card p-12 sm:p-16 relative overflow-hidden group">
-                   <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-transparent to-neon-cyan/20 opacity-50" />
-                   <div className="relative z-10">
-                      <div className="text-7xl sm:text-8xl mb-6 animate-bounce">
-                        {CARD_EMOJIS[result.type]}
-                      </div>
-                      <h3 className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4">
-                        {result.label}
-                      </h3>
-                      <p className="text-neon-cyan/70 text-xs sm:text-sm font-space-mono">
-                        Saved to Database
-                      </p>
-                   </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-transparent to-neon-cyan/20 opacity-50" />
+                  <div className="relative z-10">
+                    <div className="text-7xl sm:text-8xl mb-6 animate-bounce">
+                      {CARD_EMOJIS[result.type]}
+                    </div>
+                    <h3 className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4">
+                      {result.label}
+                    </h3>
+                    <p className="text-neon-cyan/70 text-xs sm:text-sm font-space-mono">
+                      Saved to Database
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -342,6 +386,7 @@ export default function Wildcard() {
                     onClick={() => {
                       setCurrentRound(3);
                       setResult(null);
+                      setCardPositions([0, 1, 2]);
                     }}
                     className="px-8 py-3 bg-neon-cyan text-black font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
                   >
@@ -370,26 +415,52 @@ export default function Wildcard() {
                 </p>
               </div>
 
-              {/* Cards Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 my-8 sm:my-12">
-                {CARDS.map((card, index) => (
-                  <div
-                    key={index}
-                    className={`cyber-card p-8 h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-neon transition-all duration-300 cursor-default ${
-                      isShuffle ? "animate-shuffle" : ""
-                    }`}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 via-transparent to-neon-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="relative z-10 text-center">
-                      <div className="text-5xl mb-4 animate-float">
-                        {CARD_EMOJIS[card.type]}
-                      </div>
-                      <h3 className="text-lg sm:text-xl font-orbitron glow-text">
-                        {card.label}
-                      </h3>
-                    </div>
-                  </div>
-                ))}
+              {/* Cards Grid - Face Down & Shuffling */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 my-8 sm:my-12 perspective">
+                {[0, 1, 2].map((displayIndex) => {
+                  const cardIndex = cardPositions[displayIndex];
+                  const card = CARDS[cardIndex];
+
+                  return (
+                    <motion.div
+                      key={displayIndex}
+                      layout
+                      layoutId={`card-${cardIndex}`}
+                      transition={{
+                        type: "spring",
+                        damping: 15,
+                        stiffness: 200,
+                        mass: 1,
+                      }}
+                      className={`cyber-card p-8 h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-neon cursor-default ${
+                        isSpinning ? "opacity-80" : "opacity-100"
+                      }`}
+                      style={{
+                        filter: isSpinning ? "blur(0.5px)" : "blur(0px)",
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/5 via-transparent to-neon-cyan/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      
+                      {/* Face-Down State (Spinning) */}
+                      {isSpinning ? (
+                        <div className="relative z-10 text-center flex flex-col items-center justify-center h-full">
+                          <Lock className="w-12 h-12 text-neon-cyan mb-2 animate-pulse" />
+                          <p className="text-xs text-neon-cyan/70 font-orbitron">SHUFFLING...</p>
+                        </div>
+                      ) : (
+                        /* Face-Up State (After Spin) */
+                        <div className="relative z-10 text-center">
+                          <div className="text-5xl mb-4 animate-float">
+                            {CARD_EMOJIS[card.type]}
+                          </div>
+                          <h3 className="text-lg sm:text-xl font-orbitron glow-text">
+                            {card.label}
+                          </h3>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Draw Button */}
@@ -404,7 +475,7 @@ export default function Wildcard() {
                     {isSpinning ? (
                       <>
                         <span className="animate-spin">⚡</span>
-                        Drawing...
+                        Shuffling...
                       </>
                     ) : (
                       <>
@@ -415,6 +486,18 @@ export default function Wildcard() {
                   </span>
                 </button>
               </div>
+
+              {/* Round Info */}
+              {currentRound === 3 && round2CardType && (
+                <div className="text-center p-4 border border-neon-cyan/30 rounded-sm bg-neon-cyan/5">
+                  <p className="text-xs text-neon-cyan/70 font-space-mono">
+                    ⚠️ Round 3 Restriction: You drew <span className="text-neon-green font-bold">{CARDS.find(c => c.type === round2CardType)?.label}</span> in Round 2
+                  </p>
+                  <p className="text-xs text-neon-cyan/70 font-space-mono mt-1">
+                    A different card will be selected in this round
+                  </p>
+                </div>
+              )}
             </div>
           ) : null}
         </div>
