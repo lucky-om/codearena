@@ -1,317 +1,267 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, Search, LogOut, Zap } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Lock, Search, LogOut, Zap, RefreshCcw } from "lucide-react";
 
-interface TeamResult {
-  team: string;
+// Matches the structure from our new Google Script
+interface TeamData {
+  teamId: string;
   round2: string;
   round3: string;
+  timestamp: string;
 }
 
 export default function Admin() {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  
+  // --- STATE ---
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminKey, setAdminKey] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
-  const [results, setResults] = useState<TeamResult[]>([]);
+  const [data, setData] = useState<TeamData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Check if already authenticated
+  // YOUR NEW API LINK
+  const API_URL = "https://script.google.com/macros/s/AKfycbxtTgKCBUS31DVHMj3W1FTWbyQjU91BvALBdN9ZmDdKER-o845oG9M-ecoeBZVeOTSB/exec";
+
+  // Check session on load
   useEffect(() => {
     const savedAuth = sessionStorage.getItem("codeArena_admin_auth");
     if (savedAuth) {
       setIsAuthenticated(true);
-      loadResults();
+      fetchData();
     }
   }, []);
 
-  const loadResults = async () => {
+  // --- ACTIONS ---
+
+  const fetchData = async () => {
     setIsLoading(true);
     try {
-      // Check if API URL is configured
-      if (!import.meta.env.VITE_SHEET_API_URL) {
-        throw new Error("API configuration missing");
+      // Use the 'readAll' action we created in the new script
+      const response = await fetch(`${API_URL}?action=readAll`);
+      const result = await response.json();
+
+      if (result.status === "success") {
+        setData(result.data || []);
+      } else {
+        console.error("API Error:", result.message);
       }
-
-      const savedKey = sessionStorage.getItem("codeArena_admin_key");
-      const response = await fetch(
-        `${import.meta.env.VITE_SHEET_API_URL}?action=admin&key=${savedKey}`
-      );
-
-      // Check if response is valid
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        throw new Error("Invalid response from server");
-      }
-
-      if (!data.success) {
-        throw new Error("Failed to load results");
-      }
-
-      setResults(data.results || []);
     } catch (error) {
-      console.error("Error loading results:", error);
-      toast({
-        title: "Error Loading Data",
-        description: "Could not fetch results from the database.",
-        variant: "destructive",
-      });
+      console.error("Fetch Error:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleAdminLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!adminKey.trim()) {
-      toast({
-        title: "Invalid Key",
-        description: "Please enter the admin key.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check if API URL is configured
-    if (!import.meta.env.VITE_SHEET_API_URL) {
-      toast({
-        title: "Configuration Error",
-        description: "Google Apps Script API URL not configured.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsVerifying(true);
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SHEET_API_URL}?action=admin&key=${adminKey}`
-      );
 
-      // Check if response is valid
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+    // Simple Client-Side Lock (Since the sheet is public read-only)
+    // You can change "admin" to any password you want
+    setTimeout(() => {
+      if (adminKey === "admin") {
+        sessionStorage.setItem("codeArena_admin_auth", "true");
+        setIsAuthenticated(true);
+        fetchData();
+      } else {
+        alert("ACCESS DENIED: Invalid Security Key");
       }
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        throw new Error("Invalid response from server");
-      }
-
-      if (!data.success) {
-        throw new Error("Invalid key");
-      }
-
-      // Store auth in session storage
-      sessionStorage.setItem("codeArena_admin_auth", "true");
-      sessionStorage.setItem("codeArena_admin_key", adminKey);
-      setAdminKey("");
-      setIsAuthenticated(true);
-      setResults(data.results || []);
-
-      toast({
-        title: "Authenticated",
-        description: "Welcome to the admin dashboard.",
-      });
-    } catch (error) {
-      console.error("Authentication error:", error);
-      toast({
-        title: "Authentication Failed",
-        description: "Invalid admin key. Access denied.",
-        variant: "destructive",
-      });
-    } finally {
       setIsVerifying(false);
-    }
+    }, 800); // Fake delay for "hacking" effect
   };
 
   const handleLogout = () => {
     sessionStorage.removeItem("codeArena_admin_auth");
-    sessionStorage.removeItem("codeArena_admin_key");
     setIsAuthenticated(false);
-    setResults([]);
-    navigate("/");
+    setData([]);
+    setAdminKey("");
   };
 
-  const filteredResults = results.filter((result) =>
-    result.team.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter Logic
+  const filteredData = data.filter((item) =>
+    String(item.teamId).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // --- RENDER: LOGIN SCREEN ---
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen grid-bg overflow-hidden">
-        {/* Header */}
-        <header className="border-b border-neon-cyan/30 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex items-center gap-2">
-            <Lock className="w-6 h-6 text-neon-pink" />
-            <h1 className="text-lg sm:text-xl font-orbitron font-bold">
-              <span className="glow-text">ADMIN</span>
-              <span className="text-neon-pink/70"> DASHBOARD</span>
-            </h1>
-          </div>
-        </header>
-
-        {/* Login Section */}
-        <main className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
-          <div className="w-full max-w-sm">
-            <div className="cyber-card p-8 sm:p-10 space-y-6">
-              <div className="text-center">
-                <div className="text-4xl mb-4">🔐</div>
-                <h2 className="text-2xl sm:text-3xl font-orbitron font-bold glow-text mb-2">
-                  Access Required
-                </h2>
-                <p className="text-neon-cyan/70 text-sm">
-                  Enter your admin key to continue
-                </p>
-              </div>
-
-              <form onSubmit={handleAdminLogin} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-orbitron text-neon-cyan/70 mb-2">
-                    Admin Key
-                  </label>
-                  <input
-                    type="password"
-                    value={adminKey}
-                    onChange={(e) => setAdminKey(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full px-4 py-3 bg-card border-2 border-neon-cyan/50 text-neon-cyan placeholder-neon-cyan/30 font-space-mono focus:outline-none focus:border-neon-cyan focus:shadow-neon transition-all duration-300"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isVerifying}
-                  className="w-full px-6 py-3 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-neon disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
-                >
-                  {isVerifying ? (
-                    <span className="animate-spin">⚙️</span>
-                  ) : (
-                    <Lock className="w-4 h-4 group-hover:animate-pulse" />
-                  )}
-                  {isVerifying ? "Verifying..." : "Unlock Dashboard"}
-                </button>
-              </form>
-
-              <div className="pt-4 border-t border-neon-cyan/20 text-center text-xs text-neon-cyan/50">
-                <p>🔐 Secure access only</p>
-              </div>
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background grid-bg">
+        <div className="w-full max-w-sm cyber-card p-8 space-y-6 relative overflow-hidden">
+          {/* Glitch Overlay */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-neon-green animate-pulse" />
+          
+          <div className="text-center space-y-2">
+            <div className="inline-flex p-3 rounded-full border border-neon-green/30 bg-neon-green/10 mb-4">
+              <Lock className="w-8 h-8 text-neon-green animate-pulse" />
             </div>
+            <h2 className="text-2xl font-orbitron font-bold text-white tracking-wider">
+              SYSTEM <span className="text-neon-green">LOCKED</span>
+            </h2>
+            <p className="text-xs font-space-mono text-gray-400">
+              SECURE TERMINAL // AUTHORIZED PERSONNEL ONLY
+            </p>
           </div>
-        </main>
 
-        {/* Footer */}
-        <footer className="border-t border-neon-cyan/30 backdrop-blur-sm text-center py-4">
-          <p className="text-xs text-neon-cyan/50 font-space-mono">
-            CODE ARENA © 2024 | SDJ International College
-          </p>
-        </footer>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <input
+                type="password"
+                value={adminKey}
+                onChange={(e) => setAdminKey(e.target.value)}
+                placeholder="ENTER SECURITY KEY..."
+                className="w-full px-4 py-3 bg-black/50 border border-neon-green/50 text-neon-green placeholder-neon-green/30 font-space-mono focus:outline-none focus:border-neon-green focus:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all text-center tracking-widest"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isVerifying}
+              className="w-full py-3 bg-neon-green/10 border border-neon-green text-neon-green font-orbitron font-bold hover:bg-neon-green hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isVerifying ? (
+                <span className="animate-spin">⚙</span>
+              ) : (
+                <Lock className="w-4 h-4" />
+              )}
+              {isVerifying ? "DECRYPTING..." : "AUTHENTICATE"}
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
 
+  // --- RENDER: DASHBOARD ---
   return (
-    <div className="min-h-screen grid-bg overflow-hidden flex flex-col">
-      {/* Header */}
-      <header className="border-b border-neon-cyan/30 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="w-6 h-6 text-neon-cyan animate-pulse" />
-            <h1 className="text-lg sm:text-xl font-orbitron font-bold">
-              <span className="glow-text">ADMIN</span>
-              <span className="text-neon-pink/70"> DASHBOARD</span>
+    <div className="min-h-screen bg-background flex flex-col font-space-mono">
+      
+      {/* HEADER */}
+      <header className="border-b border-neon-green/30 bg-black/40 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Zap className="w-6 h-6 text-neon-green animate-pulse" />
+            <h1 className="text-lg md:text-xl font-orbitron font-bold text-white">
+              ADMIN <span className="text-neon-green glow-text">PANEL</span>
             </h1>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 border border-neon-cyan/50 text-neon-cyan/70 hover:text-neon-cyan hover:border-neon-cyan rounded-sm transition-all duration-300 text-sm font-space-mono"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
+          
+          <div className="flex items-center gap-3">
+            <button
+              onClick={fetchData}
+              disabled={isLoading}
+              className="p-2 text-neon-green hover:bg-neon-green/10 rounded-sm transition-colors"
+              title="Refresh Data"
+            >
+              <RefreshCcw className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-1.5 border border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500 rounded-sm transition-all text-xs font-bold"
+            >
+              <LogOut className="w-4 h-4" />
+              LOGOUT
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 px-4 py-8 overflow-auto">
-        <div className="max-w-7xl mx-auto">
+      {/* MAIN CONTENT */}
+      <main className="flex-1 px-4 py-8 max-w-7xl mx-auto w-full space-y-8">
+        
+        {/* STATS GRID */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatCard 
+            label="TOTAL TEAMS" 
+            value={data.length} 
+            icon="👥" 
+          />
+          <StatCard 
+            label="ROUND 2 PLAYED" 
+            value={data.filter(i => i.round2).length} 
+            icon="🃏" 
+            color="text-neon-green"
+          />
+          <StatCard 
+            label="ROUND 3 PLAYED" 
+            value={data.filter(i => i.round3).length} 
+            icon="🏆" 
+            color="text-yellow-400"
+          />
+           <StatCard 
+            label="PENDING" 
+            value={data.filter(i => !i.round2 && !i.round3).length} 
+            icon="⏳" 
+            color="text-gray-400"
+          />
+        </div>
+
+        {/* SEARCH & TABLE SECTION */}
+        <div className="space-y-4">
+          
           {/* Search Bar */}
-          <div className="mb-6 sm:mb-8">
-            <div className="relative max-w-xs">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neon-cyan/50" />
-              <input
-                type="text"
-                placeholder="Search team number..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-card border border-neon-cyan/50 text-neon-cyan placeholder-neon-cyan/30 font-space-mono text-sm focus:outline-none focus:border-neon-cyan transition-all duration-300"
-              />
-            </div>
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neon-green/50" />
+            <input
+              type="text"
+              placeholder="SEARCH TEAM ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-card border border-neon-green/30 text-white placeholder-gray-600 focus:border-neon-green focus:shadow-[0_0_10px_rgba(0,255,0,0.2)] outline-none transition-all"
+            />
           </div>
 
-          {/* Results Table */}
-          <div className="cyber-card overflow-hidden">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <div className="text-2xl mb-2 animate-spin">⚙️</div>
-                  <p className="text-neon-cyan/70 text-sm font-space-mono">
-                    Loading results...
-                  </p>
-                </div>
+          {/* Data Table */}
+          <div className="cyber-card overflow-hidden min-h-[400px]">
+            {isLoading && data.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64 text-neon-green">
+                <div className="text-4xl animate-spin mb-4">⚙</div>
+                <p className="tracking-widest animate-pulse">ESTABLISHING UPLINK...</p>
               </div>
-            ) : filteredResults.length === 0 ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <p className="text-neon-cyan/70 text-sm font-space-mono">
-                    {results.length === 0
-                      ? "No results yet"
-                      : "No teams match your search"}
-                  </p>
-                </div>
+            ) : filteredData.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                <p>NO DATA FOUND IN SECTOR</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-neon-cyan/30 bg-card sticky top-0">
-                      <th className="px-4 sm:px-6 py-4 text-left font-orbitron text-neon-cyan/80">
-                        Team
-                      </th>
-                      <th className="px-4 sm:px-6 py-4 text-left font-orbitron text-neon-cyan/80">
-                        Round 2
-                      </th>
-                      <th className="px-4 sm:px-6 py-4 text-left font-orbitron text-neon-cyan/80">
-                        Round 3
-                      </th>
+                    <tr className="bg-black/40 border-b border-neon-green/30 text-xs text-neon-green/70 uppercase tracking-wider">
+                      <th className="p-4">Team ID</th>
+                      <th className="p-4">Round 2</th>
+                      <th className="p-4">Round 3</th>
+                      <th className="p-4">Timestamp</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {filteredResults.map((result, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-neon-cyan/20 hover:bg-neon-cyan/5 transition-colors duration-200"
-                      >
-                        <td className="px-4 sm:px-6 py-4 font-space-mono text-neon-cyan font-bold">
-                          {result.team}
+                  <tbody className="divide-y divide-neon-green/10">
+                    {filteredData.map((row) => (
+                      <tr key={row.teamId} className="hover:bg-neon-green/5 transition-colors">
+                        <td className="p-4 font-bold text-white text-lg">
+                          #{row.teamId}
                         </td>
-                        <td className="px-4 sm:px-6 py-4 font-space-mono text-neon-cyan/80">
-                          {result.round2 || "-"}
+                        <td className="p-4">
+                          {row.round2 ? (
+                            <span className="text-neon-green font-bold drop-shadow-[0_0_5px_rgba(0,255,0,0.5)]">
+                              {row.round2}
+                            </span>
+                          ) : (
+                            <span className="text-gray-600 italic text-xs">PENDING</span>
+                          )}
                         </td>
-                        <td className="px-4 sm:px-6 py-4 font-space-mono text-neon-cyan/80">
-                          {result.round3 || "-"}
+                        <td className="p-4">
+                          {row.round3 ? (
+                            <span className="text-yellow-400 font-bold drop-shadow-[0_0_5px_rgba(255,215,0,0.5)]">
+                              {row.round3}
+                            </span>
+                          ) : (
+                            <span className="text-gray-600 italic text-xs">PENDING</span>
+                          )}
+                        </td>
+                        <td className="p-4 text-xs text-gray-500 font-mono">
+                          {row.timestamp 
+                            ? new Date(row.timestamp).toLocaleTimeString() 
+                            : "-"}
                         </td>
                       </tr>
                     ))}
@@ -320,37 +270,31 @@ export default function Admin() {
               </div>
             )}
           </div>
-
-          {/* Stats */}
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4">
-            <div className="cyber-card p-4">
-              <div className="text-2xl sm:text-3xl font-orbitron glow-text mb-2">
-                {results.length}
-              </div>
-              <p className="text-xs text-neon-cyan/70 font-space-mono">Total Teams</p>
-            </div>
-            <div className="cyber-card p-4">
-              <div className="text-2xl sm:text-3xl font-orbitron glow-text mb-2">
-                {results.filter((r) => r.round2).length}
-              </div>
-              <p className="text-xs text-neon-cyan/70 font-space-mono">Round 2 Drawn</p>
-            </div>
-            <div className="cyber-card p-4">
-              <div className="text-2xl sm:text-3xl font-orbitron glow-text mb-2">
-                {results.filter((r) => r.round3).length}
-              </div>
-              <p className="text-xs text-neon-cyan/70 font-space-mono">Round 3 Drawn</p>
-            </div>
-          </div>
         </div>
+
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-neon-cyan/30 backdrop-blur-sm text-center py-4">
-        <p className="text-xs text-neon-cyan/50 font-space-mono">
-          CODE ARENA © 2026 | SDJ International College
+      {/* FOOTER */}
+      <footer className="border-t border-neon-green/20 bg-black/40 py-6 text-center">
+        <p className="text-xs text-neon-green/40">
+          SECURE CONNECTION ESTABLISHED • v2.0.4
         </p>
       </footer>
+    </div>
+  );
+}
+
+// Simple Helper Component for Stats
+function StatCard({ label, value, icon, color = "text-white" }: { label: string, value: number, icon: string, color?: string }) {
+  return (
+    <div className="cyber-card p-4 flex flex-col items-center justify-center text-center hover:bg-neon-green/5 transition-all cursor-default">
+      <div className="text-2xl mb-1">{icon}</div>
+      <div className={`text-3xl font-orbitron font-bold ${color} drop-shadow-md`}>
+        {value}
+      </div>
+      <div className="text-[10px] text-neon-green/60 uppercase tracking-widest mt-1">
+        {label}
+      </div>
     </div>
   );
 }
