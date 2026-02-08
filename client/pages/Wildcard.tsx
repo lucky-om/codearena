@@ -397,23 +397,103 @@ export default function Wildcard() {
             </div>
           ) : result ? (
             // Result Display
-            <div className="space-y-8 text-center">
+            <motion.div
+              className="space-y-8 text-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
               <div>
-                <h2 className="text-2xl font-orbitron text-neon-green mb-2">ROUND {currentRound} RESULT</h2>
-                <div className="cyber-card p-12 sm:p-16 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-transparent to-neon-cyan/20 opacity-50" />
+                <motion.h2
+                  className="text-2xl font-orbitron text-neon-green mb-2"
+                  animate={{
+                    textShadow: [
+                      "0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.2)",
+                      "0 0 20px rgba(0, 255, 0, 0.8), 0 0 40px rgba(0, 255, 0, 0.4)",
+                      "0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.2)",
+                    ],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                  }}
+                >
+                  ROUND {currentRound} RESULT
+                </motion.h2>
+
+                <motion.div
+                  className="cyber-card p-12 sm:p-16 relative overflow-hidden group"
+                  animate={{
+                    boxShadow: [
+                      "0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.2)",
+                      "0 0 40px rgba(0, 255, 0, 0.5), 0 0 80px rgba(0, 255, 0, 0.3)",
+                      "0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.2)",
+                    ],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-transparent to-neon-cyan/20 opacity-50"
+                    animate={{
+                      opacity: [0.3, 0.6, 0.3],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                    }}
+                  />
+
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-b from-transparent via-neon-green/20 to-transparent"
+                    animate={{
+                      y: ["0%", "100%"],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                  />
+
                   <div className="relative z-10">
-                    <div className="text-7xl sm:text-8xl mb-6 animate-bounce">
+                    <motion.div
+                      className="text-7xl sm:text-8xl mb-6"
+                      animate={{
+                        y: [0, -20, 0],
+                        rotateZ: [-5, 5, -5],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
                       {CARD_EMOJIS[result.type]}
-                    </div>
-                    <h3 className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4">
+                    </motion.div>
+
+                    <motion.h3
+                      className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.6 }}
+                    >
                       {result.label}
-                    </h3>
-                    <p className="text-neon-cyan/70 text-xs sm:text-sm font-space-mono">
-                      Saved to Database
-                    </p>
+                    </motion.h3>
+
+                    <motion.p
+                      className="text-neon-cyan/70 text-xs sm:text-sm font-space-mono"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5, duration: 0.6 }}
+                    >
+                      ✓ Saved to Database
+                    </motion.p>
                   </div>
-                </div>
+                </motion.div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -446,7 +526,7 @@ export default function Wildcard() {
                   Logout
                 </motion.button>
               </div>
-            </div>
+            </motion.div>
           ) : currentRound ? (
             // Draw Interface
             <div className="space-y-8">
