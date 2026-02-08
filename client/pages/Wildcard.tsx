@@ -417,28 +417,28 @@ export default function Wildcard() {
 
               {/* Cards Grid - Casino Style Shuffle with Visible Movement */}
               <div className="my-8 sm:my-12">
-                <div className="relative flex justify-center items-stretch gap-4 sm:gap-6 h-auto min-h-[240px] sm:min-h-[280px]">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 auto-rows-max">
                   {[0, 1, 2].map((position) => {
                     const cardId = cardPositions[position];
                     const card = CARDS[cardId];
 
                     return (
                       <motion.div
-                        key={position}
+                        key={`card-${cardId}`}
                         layout
-                        layoutId={`position-${position}`}
+                        layoutId={`card-${cardId}`}
                         animate={{
-                          scale: isSpinning ? 0.95 : 1,
-                          filter: isSpinning ? "blur(0.5px)" : "blur(0px)",
+                          scale: isSpinning ? 0.92 : 1,
+                          opacity: isSpinning ? 0.85 : 1,
                         }}
                         transition={{
                           type: "spring",
-                          damping: 20,
-                          stiffness: 300,
-                          mass: 1,
+                          damping: 16,
+                          stiffness: 150,
+                          mass: 1.2,
                           duration: 0.25,
                         }}
-                        className={`cyber-card p-8 flex-1 flex flex-col items-center justify-center relative overflow-hidden group cursor-default w-full sm:max-w-xs ${
+                        className={`cyber-card p-8 flex flex-col items-center justify-center relative overflow-hidden group cursor-default h-48 sm:h-56 ${
                           isSpinning ? "shadow-neon/50" : "hover:shadow-neon"
                         }`}
                       >
