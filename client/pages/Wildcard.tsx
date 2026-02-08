@@ -540,8 +540,8 @@ export default function Wildcard() {
               </div>
 
               {/* Cards Grid - Casino Style Shuffle with Visible Movement */}
-              <div className="my-8 sm:my-12">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 auto-rows-max">
+              <div className="my-6 sm:my-12">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 auto-rows-max">
                   {[0, 1, 2].map((position) => {
                     const cardId = cardPositions[position];
                     const card = CARDS[cardId];
@@ -562,7 +562,7 @@ export default function Wildcard() {
                           mass: 1.2,
                           duration: 0.25,
                         }}
-                        className={`cyber-card p-8 flex flex-col items-center justify-center relative overflow-hidden group cursor-default h-48 sm:h-56 ${
+                        className={`cyber-card p-6 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden group cursor-default h-44 sm:h-56 ${
                           isSpinning ? "shadow-neon/50" : "hover:shadow-neon"
                         }`}
                       >
