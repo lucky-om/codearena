@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { Zap, ArrowLeft, RotateCcw, Lock } from "lucide-react";
+import { Zap, ArrowLeft, RotateCcw, Lock, Volume2, VolumeX } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { soundManager } from "@/lib/sounds";
 
 // --- CONFIGURATION ---
 type CardType = "freeze" | "guess" | "out";
