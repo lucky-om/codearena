@@ -329,14 +329,30 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
 // Simple Helper Component for Stats
 function StatCard({ label, value, icon, color = "text-white" }: { label: string, value: number, icon: string, color?: string }) {
   return (
-    <div className="cyber-card p-4 flex flex-col items-center justify-center text-center hover:bg-neon-green/5 transition-all cursor-default">
-      <div className="text-2xl mb-1">{icon}</div>
-      <div className={`text-3xl font-orbitron font-bold ${color} drop-shadow-md`}>
+    <motion.div
+      className="cyber-card p-3 sm:p-4 flex flex-col items-center justify-center text-center hover:bg-neon-green/5 transition-all cursor-default"
+      whileHover={{ y: -3 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="text-xl sm:text-2xl mb-1">{icon}</div>
+      <motion.div
+        className={`text-2xl sm:text-3xl font-orbitron font-bold ${color} drop-shadow-md`}
+        animate={{
+          scale: [1, 1.05, 1],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          delay: Math.random() * 0.5,
+        }}
+      >
         {value}
-      </div>
-      <div className="text-[10px] text-neon-green/60 uppercase tracking-widest mt-1">
+      </motion.div>
+      <div className="text-[9px] sm:text-[10px] text-neon-green/60 uppercase tracking-widest mt-1">
         {label}
       </div>
-    </div>
+    </motion.div>
   );
 }
