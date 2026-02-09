@@ -174,6 +174,7 @@ export default function Wildcard() {
       const data = await response.json();
 
       if (data.status !== "success") {
+        soundManager.error();
         toast({
           title: "Team Not Found",
           description: "Please verify your team number in the sheet.",
