@@ -403,10 +403,12 @@ export default function Wildcard() {
                 <motion.button
                   onClick={() => {
                     soundManager.click();
-                    handleVerifyTeam();
+                    setTimeout(() => {
+                      handleVerifyTeam();
+                    }, 100);
                   }}
                   disabled={isLoading || !validateTeamInput(teamInput)}
-                  className="w-full px-6 py-3 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-neon disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+                  className="w-full px-6 py-3 border-2 border-neon-cyan text-neon-cyan font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-neon disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group text-sm sm:text-base"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
