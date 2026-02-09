@@ -76,8 +76,10 @@ export default {
       },
       boxShadow: {
         neon: "0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.3)",
-        "neon-lg": "0 0 20px rgba(0, 255, 0, 0.6), 0 0 40px rgba(0, 255, 0, 0.4), 0 0 60px rgba(0, 255, 0, 0.2)",
-        "neon-pink": "0 0 10px rgba(255, 0, 127, 0.5), 0 0 20px rgba(255, 0, 127, 0.3)",
+        "neon-lg":
+          "0 0 20px rgba(0, 255, 0, 0.6), 0 0 40px rgba(0, 255, 0, 0.4), 0 0 60px rgba(0, 255, 0, 0.2)",
+        "neon-pink":
+          "0 0 10px rgba(255, 0, 127, 0.5), 0 0 20px rgba(255, 0, 127, 0.3)",
       },
       keyframes: {
         "accordion-down": {
@@ -98,13 +100,15 @@ export default {
         },
         "neon-glow": {
           "0%, 100%": {
-            boxShadow: "0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3)",
+            boxShadow:
+              "0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3)",
           },
           "50%": {
-            boxShadow: "0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5)",
+            boxShadow:
+              "0 0 20px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.5)",
           },
         },
-        "float": {
+        float: {
           "0%, 100%": {
             transform: "translateY(0px)",
           },
@@ -113,14 +117,14 @@ export default {
           },
         },
         "spin-slow": {
-          "from": {
+          from: {
             transform: "rotate(0deg)",
           },
-          "to": {
+          to: {
             transform: "rotate(360deg)",
           },
         },
-        "flicker": {
+        flicker: {
           "0%, 18%, 22%, 25%, 54%, 56%, 100%": {
             opacity: "1",
           },
@@ -128,14 +132,29 @@ export default {
             opacity: "0.4",
           },
         },
+        shuffle: {
+          "0%, 100%": {
+            transform: "translateX(0px) translateY(0px)",
+          },
+          "25%": {
+            transform: "translateX(20px) translateY(-10px)",
+          },
+          "50%": {
+            transform: "translateX(-20px) translateY(10px)",
+          },
+          "75%": {
+            transform: "translateX(15px) translateY(-5px)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "neon-glow": "neon-glow 3s ease-in-out infinite",
-        "float": "float 6s ease-in-out infinite",
+        float: "float 6s ease-in-out infinite",
         "spin-slow": "spin-slow 8s linear infinite",
-        "flicker": "flicker 4s ease-in-out infinite",
+        flicker: "flicker 4s ease-in-out infinite",
+        shuffle: "shuffle 0.3s ease-in-out",
       },
     },
   },
