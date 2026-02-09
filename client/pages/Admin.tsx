@@ -64,18 +64,21 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsVerifying(true);
+    soundManager.click();
 
     // Simple Client-Side Lock
     setTimeout(() => {
       if (adminKey === "admin") {
+        soundManager.approve();
         sessionStorage.setItem("codeArena_admin_auth", "true");
         setIsAuthenticated(true);
         fetchData();
       } else {
+        soundManager.error();
         alert("ACCESS DENIED: Invalid Security Key");
       }
       setIsVerifying(false);
-    }, 800); 
+    }, 300);
   };
 
   const handleLogout = () => {
