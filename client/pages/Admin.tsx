@@ -267,42 +267,42 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left border-collapse min-w-[500px]">
                   <thead>
-                    <tr className="bg-black/40 border-b border-neon-green/30 text-xs text-neon-green/70 uppercase tracking-wider">
-                      <th className="p-4">Team ID</th>
-                      <th className="p-4">Round 2</th>
-                      <th className="p-4">Round 3</th>
-                      <th className="p-4">Timestamp</th>
+                    <tr className="bg-black/40 border-b border-neon-green/30 text-[10px] sm:text-xs text-neon-green/70 uppercase tracking-wider">
+                      <th className="p-2 sm:p-4">Team ID</th>
+                      <th className="p-2 sm:p-4">Round 2</th>
+                      <th className="p-2 sm:p-4">Round 3</th>
+                      <th className="p-2 sm:p-4 hidden sm:table-cell">Timestamp</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neon-green/10">
                     {filteredData.map((row) => (
                       <tr key={row.teamId} className="hover:bg-neon-green/5 transition-colors">
-                        <td className="p-4 font-bold text-white text-lg">
+                        <td className="p-2 sm:p-4 font-bold text-white text-sm sm:text-lg">
                           #{row.teamId}
                         </td>
-                        <td className="p-4">
+                        <td className="p-2 sm:p-4 text-xs sm:text-sm">
                           {row.round2 ? (
                             <span className="text-neon-green font-bold drop-shadow-[0_0_5px_rgba(0,255,0,0.5)]">
                               {row.round2}
                             </span>
                           ) : (
-                            <span className="text-gray-600 italic text-xs">PENDING</span>
+                            <span className="text-gray-600 italic text-[10px] sm:text-xs">PENDING</span>
                           )}
                         </td>
-                        <td className="p-4">
+                        <td className="p-2 sm:p-4 text-xs sm:text-sm">
                           {row.round3 ? (
                             <span className="text-yellow-400 font-bold drop-shadow-[0_0_5px_rgba(255,215,0,0.5)]">
                               {row.round3}
                             </span>
                           ) : (
-                            <span className="text-gray-600 italic text-xs">PENDING</span>
+                            <span className="text-gray-600 italic text-[10px] sm:text-xs">PENDING</span>
                           )}
                         </td>
-                        <td className="p-4 text-xs text-gray-500 font-mono">
-                          {row.timestamp 
-                            ? new Date(row.timestamp).toLocaleTimeString() 
+                        <td className="p-2 sm:p-4 text-[9px] sm:text-xs text-gray-500 font-mono hidden sm:table-cell">
+                          {row.timestamp
+                            ? new Date(row.timestamp).toLocaleTimeString()
                             : "-"}
                         </td>
                       </tr>
