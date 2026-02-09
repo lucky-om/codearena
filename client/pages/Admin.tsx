@@ -82,6 +82,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
   };
 
   const handleLogout = () => {
+    soundManager.click();
     sessionStorage.removeItem("codeArena_admin_auth");
     setIsAuthenticated(false);
     setData([]);
