@@ -36,7 +36,19 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
     const savedAuth = sessionStorage.getItem("codeArena_admin_auth");
     if (savedAuth) {
       setIsAuthenticated(true);
-      fetchData();
+      // Fetch data on mount if already authenticated
+      const loadData = async () => {
+        try {
+          const response = await fetch(`${API_URL}?action=readAll`);
+          const result = await response.json();
+          if (result.status === "success") {
+            setData(result.data || []);
+          }
+        } catch (error) {
+          console.error("Fetch Error:", error);
+        }
+      };
+      loadData();
     }
   }, []);
 
