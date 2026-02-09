@@ -195,6 +195,7 @@ export default function Wildcard() {
       }
 
       if (nextRound === null) {
+        soundManager.error();
         toast({
           title: "All Draws Completed",
           description: "Your team has already drawn for both rounds.",
@@ -203,6 +204,7 @@ export default function Wildcard() {
         setIsLoading(false);
         setCurrentRound(null);
       } else {
+        soundManager.verify();
         setCurrentRound(nextRound);
         toast({
           title: "Team Verified",
