@@ -220,6 +220,7 @@ export default function Wildcard() {
       });
     } catch (error) {
       console.error("Error verifying team:", error);
+      soundManager.error();
       toast({
         title: "Connection Error",
         description: "Please switch to Mobile Data (College WiFi blocks this).",
