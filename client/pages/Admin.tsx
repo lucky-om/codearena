@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Search, LogOut, Zap, RefreshCcw } from "lucide-react";
+import { motion } from "framer-motion";
+import { soundManager } from "@/lib/sounds";
 
 // Matches the structure from our new Google Script
 interface TeamData {
