@@ -80,7 +80,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
 
     // Simple Client-Side Lock
     setTimeout(() => {
-      if (adminKey === "admin") {
+      if (adminKey === "Lucky") {
         soundManager.approve();
         sessionStorage.setItem("codeArena_admin_auth", "true");
         setIsAuthenticated(true);
@@ -140,7 +140,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
               SYSTEM <span className="text-neon-green">LOCKED</span>
             </h2>
             <p className="text-xs sm:text-sm font-space-mono text-gray-400">
-              SECURE TERMINAL // AUTHORIZED ONLY
+              SECURE TERMINAL 
             </p>
           </div>
 
@@ -271,7 +271,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
             {isLoading && data.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-neon-green">
                 <div className="text-4xl animate-spin mb-4">⚙</div>
-                <p className="tracking-widest animate-pulse">ESTABLISHING UPLINK...</p>
+                <p className="tracking-widest animate-pulse">CONNECTING TO SDJIC SERVERS...</p>
               </div>
             ) : filteredData.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-gray-500">
@@ -285,7 +285,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
                       <th className="p-2 sm:p-4">Team ID</th>
                       <th className="p-2 sm:p-4">Round 2</th>
                       <th className="p-2 sm:p-4">Round 3</th>
-                      <th className="p-2 sm:p-4 hidden sm:table-cell">Timestamp</th>
+                      <th className="p-2 sm:p-4 hidden sm:table-cell">Date</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neon-green/10">
@@ -340,7 +340,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
             repeat: Infinity,
           }}
         >
-          SECURE CONNECTION ESTABLISHED • v2.0.4
+          SECURE CONNECTION ESTABLISHED • v3.0.4
         </motion.p>
       </footer>
     </div>
