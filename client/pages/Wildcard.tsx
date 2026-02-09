@@ -293,6 +293,11 @@ export default function Wildcard() {
         [currentRound === 2 ? "round2" : "round3"]: true,
       }));
 
+      // Play success sound for saved result
+      setTimeout(() => {
+        soundManager.success();
+      }, 200);
+
       toast({
         title: "Result Recorded",
         description: "Your wildcard has been recorded successfully.",
