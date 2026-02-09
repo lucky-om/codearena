@@ -26,6 +26,11 @@ export default function Admin() {
   // ✅ FIXED: UPDATED TO THE NEW WORKING URL
 const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
 
+  // Initialize sound manager
+  useEffect(() => {
+    soundManager.setEnabled(true);
+  }, []);
+
   // Check session on load
   useEffect(() => {
     const savedAuth = sessionStorage.getItem("codeArena_admin_auth");
