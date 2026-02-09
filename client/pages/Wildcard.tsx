@@ -304,6 +304,7 @@ export default function Wildcard() {
       });
     } catch (error) {
       console.error("Error recording result:", error);
+      soundManager.error();
       toast({
         title: "Recording Error",
         description: "Could not record result. Check connection.",
