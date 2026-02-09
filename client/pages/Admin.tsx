@@ -240,22 +240,22 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
         </div>
 
         {/* SEARCH & TABLE SECTION */}
-        <div className="space-y-4">
-          
+        <div className="space-y-3 sm:space-y-4">
+
           {/* Search Bar */}
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neon-green/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 sm:w-4 h-3 sm:h-4 text-neon-green/50" />
             <input
               type="text"
               placeholder="SEARCH TEAM ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-card border border-neon-green/30 text-white placeholder-gray-600 focus:border-neon-green focus:shadow-[0_0_10px_rgba(0,255,0,0.2)] outline-none transition-all"
+              className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 bg-card border border-neon-green/30 text-white placeholder-gray-600 focus:border-neon-green focus:shadow-[0_0_10px_rgba(0,255,0,0.2)] outline-none transition-all text-sm sm:text-base"
             />
           </div>
 
           {/* Data Table */}
-          <div className="cyber-card overflow-hidden min-h-[400px]">
+          <div className="cyber-card overflow-hidden min-h-[300px] sm:min-h-[400px]">
             {isLoading && data.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-neon-green">
                 <div className="text-4xl animate-spin mb-4">⚙</div>
