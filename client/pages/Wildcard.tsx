@@ -648,10 +648,10 @@ export default function Wildcard() {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.4, ease: "easeOut" }}
                             >
-                              <div className="text-5xl mb-4 animate-float">
+                              <div className="text-4xl sm:text-5xl mb-2 sm:mb-4 animate-float">
                                 {CARD_EMOJIS[card.type]}
                               </div>
-                              <h3 className="text-lg sm:text-xl font-orbitron glow-text font-bold">
+                              <h3 className="text-sm sm:text-lg font-orbitron glow-text font-bold">
                                 {card.label}
                               </h3>
                             </motion.div>
