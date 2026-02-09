@@ -169,30 +169,42 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
       
       {/* HEADER */}
       <header className="border-b border-neon-green/30 bg-black/40 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Zap className="w-6 h-6 text-neon-green animate-pulse" />
-            <h1 className="text-lg md:text-xl font-orbitron font-bold text-white">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <Zap className="w-5 sm:w-6 h-5 sm:h-6 text-neon-green" />
+            </motion.div>
+            <h1 className="text-base sm:text-lg md:text-xl font-orbitron font-bold text-white tracking-wider">
               ADMIN <span className="text-neon-green glow-text">PANEL</span>
             </h1>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <button
-              onClick={fetchData}
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <motion.button
+              onClick={() => {
+                soundManager.click();
+                fetchData();
+              }}
               disabled={isLoading}
               className="p-2 text-neon-green hover:bg-neon-green/10 rounded-sm transition-colors"
               title="Refresh Data"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <RefreshCcw className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
-            </button>
-            <button
+              <RefreshCcw className={`w-4 sm:w-5 h-4 sm:h-5 ${isLoading ? "animate-spin" : ""}`} />
+            </motion.button>
+            <motion.button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-3 py-1.5 border border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500 rounded-sm transition-all text-xs font-bold"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 border border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500 rounded-sm transition-all text-[10px] sm:text-xs font-bold"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <LogOut className="w-4 h-4" />
-              LOGOUT
-            </button>
+              <LogOut className="w-3 sm:w-4 h-3 sm:h-4" />
+              <span className="hidden sm:inline">LOGOUT</span>
+            </motion.button>
           </div>
         </div>
       </header>
