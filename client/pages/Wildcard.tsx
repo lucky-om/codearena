@@ -371,23 +371,23 @@ export default function Wildcard() {
       </header>
 
       {/* Main Content */}
-      <main className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-12">
+      <main className="min-h-[calc(100vh-200px)] flex items-center justify-center px-3 sm:px-4 py-6 sm:py-12">
         <div className="w-full max-w-2xl">
           {!isVerified ? (
             // Team Verification Form
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               <div className="text-center">
-                <h2 className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-orbitron font-bold glow-text mb-2 sm:mb-4">
                   Team Verification
                 </h2>
-                <p className="text-neon-cyan/70 text-sm sm:text-base">
+                <p className="text-neon-cyan/70 text-xs sm:text-sm lg:text-base">
                   Enter your numeric team number to begin
                 </p>
               </div>
 
-              <div className="max-w-xs mx-auto space-y-6">
+              <div className="max-w-xs mx-auto space-y-4 sm:space-y-6">
                 <div>
-                  <label className="block text-sm font-orbitron text-neon-cyan/70 mb-2">
+                  <label className="block text-xs sm:text-sm font-orbitron text-neon-cyan/70 mb-2">
                     Team Number
                   </label>
                   <input
@@ -398,7 +398,7 @@ export default function Wildcard() {
                       setTeamInput(e.target.value.replace(/\D/g, ""))
                     }
                     placeholder="e.g., 101"
-                    className="w-full px-4 py-3 bg-card border-2 border-neon-cyan/50 text-neon-cyan placeholder-neon-cyan/30 font-space-mono focus:outline-none focus:border-neon-cyan focus:shadow-neon transition-all duration-300"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-card border-2 border-neon-cyan/50 text-neon-cyan placeholder-neon-cyan/30 font-space-mono focus:outline-none focus:border-neon-cyan focus:shadow-neon transition-all duration-300 text-sm sm:text-base"
                     onKeyDown={(e) => e.key === "Enter" && handleVerifyTeam()}
                   />
                 </div>
