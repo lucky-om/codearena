@@ -210,31 +210,31 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
       </header>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 px-4 py-8 max-w-7xl mx-auto w-full space-y-8">
-        
+      <main className="flex-1 px-3 sm:px-4 py-6 sm:py-8 max-w-7xl mx-auto w-full space-y-6 sm:space-y-8">
+
         {/* STATS GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatCard 
-            label="TOTAL TEAMS" 
-            value={data.length} 
-            icon="👥" 
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+          <StatCard
+            label="TOTAL TEAMS"
+            value={data.length}
+            icon="👥"
           />
-          <StatCard 
-            label="ROUND 2 PLAYED" 
-            value={data.filter(i => i.round2).length} 
-            icon="🃏" 
+          <StatCard
+            label="ROUND 2"
+            value={data.filter(i => i.round2).length}
+            icon="🃏"
             color="text-neon-green"
           />
-          <StatCard 
-            label="ROUND 3 PLAYED" 
-            value={data.filter(i => i.round3).length} 
-            icon="🏆" 
+          <StatCard
+            label="ROUND 3"
+            value={data.filter(i => i.round3).length}
+            icon="🏆"
             color="text-yellow-400"
           />
-           <StatCard 
-            label="PENDING" 
-            value={data.filter(i => !i.round2 && !i.round3).length} 
-            icon="⏳" 
+           <StatCard
+            label="PENDING"
+            value={data.filter(i => !i.round2 && !i.round3).length}
+            icon="⏳"
             color="text-gray-400"
           />
         </div>
