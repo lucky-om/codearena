@@ -234,7 +234,7 @@ export default function Wildcard() {
   const performDraw = async () => {
     if (!isVerified || currentRound === null) return;
 
-    // Start shuffle sound
+    // Start shuffle sound (continuous for 3000ms)
     soundManager.shuffle();
 
     // Generate shuffle sequence before starting
@@ -249,13 +249,15 @@ export default function Wildcard() {
     // Wait for shuffle animation to complete (3 seconds)
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    // Play reveal sound
-    soundManager.reveal();
-
-    // Get random card with exclusion logic
+    // Get random card with exclusion logic (done before displaying)
     const selectedCard = getRandomCard(
       currentRound === 3 ? round2CardType : null,
     );
+
+    // Play reveal sound at exact moment shuffle ends (synchronized with result display)
+    soundManager.reveal();
+
+    // Display result after reveal sound starts
     setResult(selectedCard);
 
     // Submit to backend
@@ -294,10 +296,10 @@ export default function Wildcard() {
         [currentRound === 2 ? "round2" : "round3"]: true,
       }));
 
-      // Play success sound for saved result
+      // Play success sound after result is displayed and revealed (synchronized)
       setTimeout(() => {
         soundManager.success();
-      }, 200);
+      }, 300);
 
       toast({
         title: "Result Recorded",
