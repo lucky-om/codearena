@@ -66,17 +66,24 @@ class SoundManager {
     setTimeout(() => this.playTone(1047, 0.12, 'sine', 0.35), 100); // C note (high)
   }
 
-  // Shuffle/spinning effect - rapid ascending pattern (synchronized with animation)
+  // Shuffle/spinning effect - continuous pattern (synchronized with 3000ms animation)
   shuffle() {
     if (!this.enabled || !this.audioContext) return;
 
-    const freqs = [400, 480, 570, 680, 810, 960];
-    freqs.forEach((freq, i) => {
-      // Each tone at 80ms intervals, 60ms duration
-      setTimeout(() => {
-        this.playTone(freq, 0.06, 'triangle', 0.22);
-      }, i * 70); // 70ms interval for smoother cascade
-    });
+    // Play 10 cascades over 3000ms to keep sound continuous during shuffle
+    const numCascades = 5; // 5 cascades = 3000ms total
+    const cascadeDuration = 600; // ms per cascade
+
+    for (let cascade = 0; cascade < numCascades; cascade++) {
+      const baseDelay = cascade * cascadeDuration;
+      const freqs = [400, 480, 570, 680, 810, 960];
+
+      freqs.forEach((freq, i) => {
+        setTimeout(() => {
+          this.playTone(freq, 0.06, 'triangle', 0.18);
+        }, baseDelay + i * 70);
+      });
+    }
   }
 
   // Draw result reveal - dramatic drop/impact sound (synchronized with 200ms reveal animation)
