@@ -98,19 +98,37 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background grid-bg">
-        <div className="w-full max-w-sm cyber-card p-8 space-y-6 relative overflow-hidden">
+        <motion.div
+          className="w-full max-w-sm cyber-card p-6 sm:p-8 space-y-6 relative overflow-hidden"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
           {/* Glitch Overlay */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-neon-green animate-pulse" />
-          
+          <motion.div
+            className="absolute top-0 left-0 w-full h-1 bg-neon-green"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+
           <div className="text-center space-y-2">
-            <div className="inline-flex p-3 rounded-full border border-neon-green/30 bg-neon-green/10 mb-4">
-              <Lock className="w-8 h-8 text-neon-green animate-pulse" />
-            </div>
-            <h2 className="text-2xl font-orbitron font-bold text-white tracking-wider">
+            <motion.div
+              className="inline-flex p-3 rounded-full border border-neon-green/30 bg-neon-green/10 mb-4"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <motion.div
+                animate={{ rotateZ: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              >
+                <Lock className="w-8 h-8 text-neon-green" />
+              </motion.div>
+            </motion.div>
+            <h2 className="text-2xl sm:text-3xl font-orbitron font-bold text-white tracking-wider">
               SYSTEM <span className="text-neon-green">LOCKED</span>
             </h2>
-            <p className="text-xs font-space-mono text-gray-400">
-              SECURE TERMINAL // AUTHORIZED PERSONNEL ONLY
+            <p className="text-xs sm:text-sm font-space-mono text-gray-400">
+              SECURE TERMINAL // AUTHORIZED ONLY
             </p>
           </div>
 
@@ -121,14 +139,16 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
                 value={adminKey}
                 onChange={(e) => setAdminKey(e.target.value)}
                 placeholder="ENTER SECURITY KEY..."
-                className="w-full px-4 py-3 bg-black/50 border border-neon-green/50 text-neon-green placeholder-neon-green/30 font-space-mono focus:outline-none focus:border-neon-green focus:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all text-center tracking-widest"
+                className="w-full px-3 sm:px-4 py-3 bg-black/50 border border-neon-green/50 text-neon-green placeholder-neon-green/30 font-space-mono focus:outline-none focus:border-neon-green focus:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all text-center tracking-widest text-sm sm:text-base"
               />
             </div>
 
-            <button
+            <motion.button
               type="submit"
               disabled={isVerifying}
-              className="w-full py-3 bg-neon-green/10 border border-neon-green text-neon-green font-orbitron font-bold hover:bg-neon-green hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-neon-green/10 border border-neon-green text-neon-green font-orbitron font-bold hover:bg-neon-green hover:text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               {isVerifying ? (
                 <span className="animate-spin">⚙</span>
@@ -136,9 +156,9 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
                 <Lock className="w-4 h-4" />
               )}
               {isVerifying ? "DECRYPTING..." : "AUTHENTICATE"}
-            </button>
+            </motion.button>
           </form>
-        </div>
+        </motion.div>
       </div>
     );
   }
