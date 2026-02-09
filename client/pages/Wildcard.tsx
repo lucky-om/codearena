@@ -330,20 +330,20 @@ export default function Wildcard() {
     <div className="min-h-screen grid-bg overflow-hidden text-white font-space-mono">
       {/* Header */}
       <header className="border-b border-neon-cyan/30 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-6 flex items-center justify-between gap-3">
           <Link
             to="/"
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity min-w-0"
             onClick={() => soundManager.click()}
           >
-            <ArrowLeft className="w-5 h-5 text-neon-cyan" />
-            <h1 className="text-lg sm:text-xl font-orbitron font-bold glow-text">
-              WILDCARD DRAW
+            <ArrowLeft className="w-4 sm:w-5 h-4 sm:h-5 text-neon-cyan flex-shrink-0" />
+            <h1 className="text-sm sm:text-lg lg:text-xl font-orbitron font-bold glow-text truncate">
+              WILDCARD
             </h1>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {isVerified && (
-              <div className="text-right">
+              <div className="text-right hidden sm:block">
                 <p className="text-xs text-neon-cyan/70 font-space-mono">
                   TEAM
                 </p>
