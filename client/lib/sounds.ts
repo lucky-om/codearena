@@ -86,7 +86,7 @@ class SoundManager {
     }
   }
 
-  // Draw result reveal - dramatic drop/impact sound (synchronized with 200ms reveal animation)
+  // Draw result reveal - dramatic impact sound at shuffle end (300ms)
   reveal() {
     if (!this.enabled || !this.audioContext) return;
     const now = this.audioContext.currentTime;
@@ -97,16 +97,16 @@ class SoundManager {
       osc.connect(gain);
       gain.connect(this.audioContext.destination);
 
-      // Frequency sweep from 600 down to 120 over 200ms
-      osc.frequency.setValueAtTime(600, now);
-      osc.frequency.exponentialRampToValueAtTime(120, now + 0.2);
-      osc.type = 'sawtooth';
+      // Frequency sweep from 800 down to 100 over 300ms for more dramatic effect
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
+      osc.type = 'square';
 
-      gain.gain.setValueAtTime(0.4, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+      gain.gain.setValueAtTime(0.5, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
 
       osc.start(now);
-      osc.stop(now + 0.2);
+      osc.stop(now + 0.3);
     } catch (e) {
       // Silently fail
     }
