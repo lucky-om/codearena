@@ -317,10 +317,19 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-neon-green/20 bg-black/40 py-6 text-center">
-        <p className="text-xs text-neon-green/40">
+      <footer className="border-t border-neon-green/20 bg-black/40 py-4 sm:py-6 text-center">
+        <motion.p
+          className="text-xs sm:text-sm text-neon-green/40"
+          animate={{
+            opacity: [0.4, 0.7, 0.4],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+          }}
+        >
           SECURE CONNECTION ESTABLISHED • v2.0.4
-        </p>
+        </motion.p>
       </footer>
     </div>
   );
