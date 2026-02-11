@@ -102,14 +102,10 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
     setAdminKey("");
   };
 
-  // Filter Logic - search by teamId or target
+  // Filter Logic - search by Team ID only
   const filteredData = data.filter((item) => {
     const searchLower = searchTerm.toLowerCase();
-    return (
-      String(item.teamId).toLowerCase().includes(searchLower) ||
-      String(item.r2Target).toLowerCase().includes(searchLower) ||
-      String(item.r3Target).toLowerCase().includes(searchLower)
-    );
+    return String(item.teamId).toLowerCase().includes(searchLower);
   });
 
   // --- RENDER: LOGIN SCREEN ---
@@ -265,7 +261,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 sm:w-4 h-3 sm:h-4 text-neon-green/50" />
             <input
               type="text"
-              placeholder="SEARCH TEAM ID OR TARGET..."
+              placeholder="SEARCH TEAM ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 bg-card border border-neon-green/30 text-white placeholder-gray-600 focus:border-neon-green focus:shadow-[0_0_10px_rgba(0,255,0,0.2)] outline-none transition-all text-sm sm:text-base"
