@@ -63,13 +63,18 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
       const response = await fetch(`${API_URL}?action=readAll`);
       const result = await response.json();
 
+      console.log("[v0] API Response:", result);
+
       if (result.status === "success") {
-        setData(result.data || []);
+        const fetchedData = result.data || [];
+        console.log("[v0] Fetched data count:", fetchedData.length);
+        console.log("[v0] First item structure:", fetchedData[0]);
+        setData(fetchedData);
       } else {
-        console.error("API Error:", result.message);
+        console.error("[v0] API Error:", result.message);
       }
     } catch (error) {
-      console.error("Fetch Error:", error);
+      console.error("[v0] Fetch Error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -103,10 +108,15 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
     setAdminKey("");
   };
 
-  // Filter Logic
-  const filteredData = data.filter((item) =>
-    String(item.teamId).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter Logic - search by teamId or target
+  const filteredData = data.filter((item) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      String(item.teamId).toLowerCase().includes(searchLower) ||
+      String(item.round2Target).toLowerCase().includes(searchLower) ||
+      String(item.round3Target).toLowerCase().includes(searchLower)
+    );
+  });
 
   // --- RENDER: LOGIN SCREEN ---
   if (!isAuthenticated) {
