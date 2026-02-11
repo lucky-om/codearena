@@ -4,11 +4,13 @@ import { Lock, Search, LogOut, Zap, RefreshCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import { soundManager } from "@/lib/sounds";
 
-// Matches the structure from our new Google Script
+// Matches the structure from our new Google Script - 5 column structure
 interface TeamData {
   teamId: string;
-  round2: string;
-  round3: string;
+  round2Card: string;
+  round2Target: string;
+  round3Card: string;
+  round3Target: string;
   timestamp: string;
 }
 
@@ -23,8 +25,8 @@ export default function Admin() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ✅ FIXED: UPDATED TO THE NEW WORKING URL
-const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
+  // ✅ Updated API URL from user
+const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsijLhYn_2SgroB4iCUI5xpBFJ3QVo-KphiL8G0WZ-rcAPwIA/exec";
 
   // Initialize sound manager
   useEffect(() => {
@@ -232,22 +234,22 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
             icon="👥"
           />
           <StatCard
-            label="ROUND 2"
-            value={data.filter(i => i.round2).length}
+            label="ROUND 2 CARDS"
+            value={data.filter(i => i.round2Card).length}
             icon="🃏"
             color="text-neon-green"
           />
           <StatCard
-            label="ROUND 3"
-            value={data.filter(i => i.round3).length}
+            label="ROUND 3 CARDS"
+            value={data.filter(i => i.round3Card).length}
             icon="🏆"
             color="text-yellow-400"
           />
-           <StatCard
-            label="PENDING"
-            value={data.filter(i => !i.round2 && !i.round3).length}
-            icon="⏳"
-            color="text-gray-400"
+          <StatCard
+            label="ATTACKS SENT"
+            value={data.filter(i => i.round2Target || i.round3Target).length}
+            icon="⚡"
+            color="text-danger-red"
           />
         </div>
 
@@ -259,7 +261,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 sm:w-4 h-3 sm:h-4 text-neon-green/50" />
             <input
               type="text"
-              placeholder="SEARCH TEAM ID..."
+              placeholder="SEARCH TEAM ID OR TARGET..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-3 bg-card border border-neon-green/30 text-white placeholder-gray-600 focus:border-neon-green focus:shadow-[0_0_10px_rgba(0,255,0,0.2)] outline-none transition-all text-sm sm:text-base"
@@ -279,43 +281,57 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bI
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[500px]">
+                <table className="w-full text-left border-collapse min-w-[700px]">
                   <thead>
-                    <tr className="bg-black/40 border-b border-neon-green/30 text-[10px] sm:text-xs text-neon-green/70 uppercase tracking-wider">
+                    <tr className="bg-black/40 border-b border-neon-green/30 text-[9px] sm:text-xs text-neon-green/70 uppercase tracking-wider">
                       <th className="p-2 sm:p-4">Team ID</th>
-                      <th className="p-2 sm:p-4">Round 2</th>
-                      <th className="p-2 sm:p-4">Round 3</th>
-                      <th className="p-2 sm:p-4 hidden sm:table-cell">Date</th>
+                      <th className="p-2 sm:p-4">R2 Card</th>
+                      <th className="p-2 sm:p-4">R2 Target</th>
+                      <th className="p-2 sm:p-4">R3 Card</th>
+                      <th className="p-2 sm:p-4">R3 Target</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neon-green/10">
                     {filteredData.map((row) => (
-                      <tr key={row.teamId} className="hover:bg-neon-green/5 transition-colors">
-                        <td className="p-2 sm:p-4 font-bold text-white text-sm sm:text-lg">
+                      <tr key={row.teamId} className="hover:bg-neon-green/5 transition-colors text-[11px] sm:text-sm">
+                        <td className="p-2 sm:p-4 font-bold text-white">
                           #{row.teamId}
                         </td>
-                        <td className="p-2 sm:p-4 text-xs sm:text-sm">
-                          {row.round2 ? (
+                        <td className="p-2 sm:p-4">
+                          {row.round2Card ? (
                             <span className="text-neon-green font-bold drop-shadow-[0_0_5px_rgba(0,255,0,0.5)]">
-                              {row.round2}
+                              {row.round2Card}
                             </span>
                           ) : (
-                            <span className="text-gray-600 italic text-[10px] sm:text-xs">PENDING</span>
+                            <span className="text-gray-600 italic">-</span>
                           )}
                         </td>
-                        <td className="p-2 sm:p-4 text-xs sm:text-sm">
-                          {row.round3 ? (
+                        <td className="p-2 sm:p-4">
+                          {row.round2Target ? (
+                            <span className="text-danger-red font-bold drop-shadow-[0_0_5px_rgba(255,0,60,0.5)]">
+                              #{row.round2Target}
+                            </span>
+                          ) : (
+                            <span className="text-gray-600 italic">-</span>
+                          )}
+                        </td>
+                        <td className="p-2 sm:p-4">
+                          {row.round3Card ? (
                             <span className="text-yellow-400 font-bold drop-shadow-[0_0_5px_rgba(255,215,0,0.5)]">
-                              {row.round3}
+                              {row.round3Card}
                             </span>
                           ) : (
-                            <span className="text-gray-600 italic text-[10px] sm:text-xs">PENDING</span>
+                            <span className="text-gray-600 italic">-</span>
                           )}
                         </td>
-                        <td className="p-2 sm:p-4 text-[9px] sm:text-xs text-gray-500 font-mono hidden sm:table-cell">
-                          {row.timestamp
-                            ? new Date(row.timestamp).toLocaleTimeString()
-                            : "-"}
+                        <td className="p-2 sm:p-4">
+                          {row.round3Target ? (
+                            <span className="text-danger-red font-bold drop-shadow-[0_0_5px_rgba(255,0,60,0.5)]">
+                              #{row.round3Target}
+                            </span>
+                          ) : (
+                            <span className="text-gray-600 italic">-</span>
+                          )}
                         </td>
                       </tr>
                     ))}
