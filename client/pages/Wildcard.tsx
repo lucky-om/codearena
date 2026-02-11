@@ -31,9 +31,9 @@ const CARD_EMOJIS: Record<CardType, string> = {
   out: "❌",
 };
 
-// ✅ API URL (Hardcoded to prevent .env issues)
+// ✅ API URL (Updated URL from user)
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbyfL2HPX1SBw4lkpbHN96bIxMsu8l_18YiWhl2gzr5v7kgHWN5NYf8c-7IZkxuWtBQD/exec";
+  "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsijLhYn_2SgroB4iCUI5xpBFJ3QVo-KphiL8G0WZ-rcAPwIA/exec";
 
 // ✅ Helper function to get random card, optionally excluding a type
 const getRandomCard = (excludeType: CardType | null = null): DrawResult => {
@@ -82,6 +82,11 @@ export default function Wildcard() {
     round2: false,
     round3: false,
   });
+
+  // NEW: Target Input State
+  const [targetTeamId, setTargetTeamId] = useState("");
+  const [isConfirmingAttack, setIsConfirmingAttack] = useState(false);
+  const [attackInProgress, setAttackInProgress] = useState(false);
 
   // Face-down state & position tracking for shuffle
   const [cardPositions, setCardPositions] = useState<number[]>([0, 1, 2]);
@@ -259,16 +264,30 @@ export default function Wildcard() {
 
     // Display result after reveal sound starts
     setResult(selectedCard);
+    setIsSpinning(false);
+    
+    // NEW: Show target input instead of immediately saving
+    setIsConfirmingAttack(true);
+    setTargetTeamId("");
+  };
 
-    // Submit to backend
+  // NEW: Handle Attack Confirmation
+  const handleConfirmAttack = async () => {
+    if (!targetTeamId.trim() || !result) {
+      toast({
+        title: "Invalid Target",
+        description: "Please enter a valid opponent team ID.",
+        variant: "destructive",
+      });
+      soundManager.error();
+      return;
+    }
+
+    setAttackInProgress(true);
+    soundManager.click();
+
     try {
-      let url = `${API_URL}?action=save&teamId=${teamInput}`;
-
-      if (currentRound === 2) {
-        url += `&round2=${encodeURIComponent(selectedCard.label)}`;
-      } else {
-        url += `&round3=${encodeURIComponent(selectedCard.label)}`;
-      }
+      const url = `${API_URL}?action=spinAndAttack&attackerId=${teamInput}&round=${currentRound}&card=${encodeURIComponent(result.label)}&targetId=${targetTeamId}`;
 
       const response = await fetch(url);
 
@@ -279,14 +298,30 @@ export default function Wildcard() {
       const data = await response.json();
 
       if (data.status !== "success") {
-        throw new Error(data.message || "Failed to record result");
+        // Error - likely target already hit
+        soundManager.error();
+        toast({
+          title: "Attack Failed",
+          description: data.message || "Target team already hit in this round!",
+          variant: "destructive",
+        });
+        setTargetTeamId(""); // Clear target input for retry
+        setAttackInProgress(false);
+        return;
       }
+
+      // Success
+      soundManager.success();
+      toast({
+        title: "Attack Confirmed",
+        description: `Team ${targetTeamId} has been targeted with ${result.label}!`,
+      });
 
       // Update localStorage
       if (currentRound === 2) {
         localStorage.setItem("codeArena_round2_drawn", "true");
-        localStorage.setItem("codeArena_round2_card_type", selectedCard.type);
-        setRound2CardType(selectedCard.type);
+        localStorage.setItem("codeArena_round2_card_type", result.type);
+        setRound2CardType(result.type);
       } else {
         localStorage.setItem("codeArena_round3_drawn", "true");
       }
@@ -296,28 +331,17 @@ export default function Wildcard() {
         [currentRound === 2 ? "round2" : "round3"]: true,
       }));
 
-      // Play success sound after result is displayed and revealed (synchronized)
-      setTimeout(() => {
-        soundManager.success();
-      }, 300);
-
-      toast({
-        title: "Result Recorded",
-        description: "Your wildcard has been recorded successfully.",
-      });
+      setIsConfirmingAttack(false);
+      setAttackInProgress(false);
     } catch (error) {
-      console.error("Error recording result:", error);
+      console.error("Error confirming attack:", error);
       soundManager.error();
       toast({
-        title: "Recording Error",
-        description: "Could not record result. Check connection.",
+        title: "Connection Error",
+        description: "Could not confirm attack. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsSpinning(false);
-      setShuffleSequence([]);
-      setCurrentShuffleStep(0);
-      setCardPositions([0, 1, 2]);
+      setAttackInProgress(false);
     }
   };
 
@@ -433,8 +457,8 @@ export default function Wildcard() {
                 </motion.button>
               </div>
             </div>
-          ) : result ? (
-            // Result Display
+          ) : result && isConfirmingAttack ? (
+            // NEW: Target Input + Confirm Attack
             <motion.div
               className="space-y-8 text-center"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -456,7 +480,135 @@ export default function Wildcard() {
                     repeat: Infinity,
                   }}
                 >
-                  ROUND {currentRound} RESULT
+                  CARD REVEALED
+                </motion.h2>
+
+                <motion.div
+                  className="cyber-card p-12 sm:p-16 relative overflow-hidden group mb-8"
+                  animate={{
+                    boxShadow: [
+                      "0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.2)",
+                      "0 0 40px rgba(0, 255, 0, 0.5), 0 0 80px rgba(0, 255, 0, 0.3)",
+                      "0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.2)",
+                    ],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-transparent to-neon-cyan/20 opacity-50"
+                    animate={{
+                      opacity: [0.3, 0.6, 0.3],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                    }}
+                  />
+
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-b from-transparent via-neon-green/20 to-transparent"
+                    animate={{
+                      y: ["0%", "100%"],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                  />
+
+                  <div className="relative z-10">
+                    <motion.div
+                      className="text-7xl sm:text-8xl mb-6"
+                      animate={{
+                        y: [0, -20, 0],
+                        rotateZ: [-5, 5, -5],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      {CARD_EMOJIS[result.type]}
+                    </motion.div>
+
+                    <motion.h3
+                      className="text-3xl sm:text-4xl font-orbitron font-bold glow-text mb-4"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3, duration: 0.6 }}
+                    >
+                      {result.label}
+                    </motion.h3>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Target Input Section */}
+              <div className="max-w-xs mx-auto space-y-4 sm:space-y-6">
+                <div className="text-center">
+                  <label className="block text-base sm:text-lg font-orbitron text-danger-red mb-4 tracking-wider">
+                    SELECT TARGET
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={targetTeamId}
+                    onChange={(e) =>
+                      setTargetTeamId(e.target.value.replace(/\D/g, ""))
+                    }
+                    placeholder="ENTER OPPONENT TEAM ID"
+                    className="w-full px-4 py-3 bg-danger-red/10 border-2 border-danger-red text-danger-red placeholder-danger-red/50 font-space-mono focus:outline-none focus:border-danger-red focus:shadow-[0_0_15px_rgba(255,0,60,0.5)] transition-all text-center tracking-widest text-base rounded-sm"
+                    disabled={attackInProgress}
+                    onKeyDown={(e) => e.key === "Enter" && handleConfirmAttack()}
+                  />
+                </div>
+
+                <motion.button
+                  onClick={handleConfirmAttack}
+                  disabled={attackInProgress || !targetTeamId.trim()}
+                  className="w-full px-6 py-3 border-2 border-danger-red text-danger-red font-orbitron font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,0,60,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group text-base"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {attackInProgress ? (
+                    <span className="animate-spin">⚙️</span>
+                  ) : (
+                    <Zap className="w-4 h-4 group-hover:animate-pulse" />
+                  )}
+                  {attackInProgress ? "Confirming Attack..." : "CONFIRM ATTACK"}
+                </motion.button>
+              </div>
+            </motion.div>
+          ) : result ? (
+            // Result Display (Success)
+            <motion.div
+              className="space-y-8 text-center"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <div>
+                <motion.h2
+                  className="text-2xl font-orbitron text-neon-green mb-2"
+                  animate={{
+                    textShadow: [
+                      "0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.2)",
+                      "0 0 20px rgba(0, 255, 0, 0.8), 0 0 40px rgba(0, 255, 0, 0.4)",
+                      "0 0 10px rgba(0, 255, 0, 0.5), 0 0 20px rgba(0, 255, 0, 0.2)",
+                    ],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                  }}
+                >
+                  ATTACK CONFIRMED
                 </motion.h2>
 
                 <motion.div
@@ -528,7 +680,7 @@ export default function Wildcard() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.5, duration: 0.6 }}
                     >
-                      ✓ Saved to Database
+                      ✓ Attack Saved to Database
                     </motion.p>
                   </div>
                 </motion.div>
@@ -542,6 +694,7 @@ export default function Wildcard() {
                       setCurrentRound(3);
                       setResult(null);
                       setCardPositions([0, 1, 2]);
+                      setIsConfirmingAttack(false);
                     }}
                     className="px-8 py-3 bg-neon-cyan text-black font-bold uppercase tracking-wider rounded-sm transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
                     whileHover={{ scale: 1.05 }}

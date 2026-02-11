@@ -103,6 +103,81 @@
 }
 
 @layer components {
+  /* --- CRT Scanline Overlay --- */
+  .scanlines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanlines::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.15) 0px,
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* --- Retro Grid Background --- */
+  .grid-bg {
+    position: relative;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 255, 0, 0.03) 0px,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(0, 255, 0, 0.03) 0px,
+        rgba(0, 255, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+    background-size: 20px 20px;
+  }
+
+  /* --- Glassmorphism Effect --- */
+  .glass {
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 65, 0.2);
+  }
+
+  .glass-thick {
+    background: rgba(5, 5, 5, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 255, 65, 0.3);
+  }
+
+  /* --- Neon Glow Effects --- */
+  .glow-neon-green {
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3);
+  }
+
+  .glow-neon-cyan {
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .glow-danger-red {
+    box-shadow: 0 0 10px rgba(255, 0, 60, 0.5), 0 0 20px rgba(255, 0, 60, 0.3);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5), 0 0 20px rgba(255, 0, 255, 0.3);
+  }
+
   /* --- Existing Effects --- */
   .glow-text {
     @apply text-neon-green drop-shadow-lg;
@@ -181,5 +256,42 @@
 
   .loading-text {
     @apply text-center p-10 text-neon-green text-xl animate-pulse;
+  }
+
+  /* --- New Color Utilities for Danger Red --- */
+  .text-danger-red {
+    @apply text-[#ff003c];
+  }
+
+  .border-danger-red {
+    @apply border-[#ff003c];
+  }
+
+  .bg-danger-red {
+    @apply bg-[#ff003c];
+  }
+
+  .shadow-neon {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.3);
+  }
+
+  /* --- Float Animation --- */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* --- Holographic Flicker --- */
+  @keyframes hologram-flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+  }
+
+  .animate-hologram-flicker {
+    animation: hologram-flicker 0.15s ease-in-out infinite;
   }
 }
