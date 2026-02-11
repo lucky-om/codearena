@@ -4,14 +4,13 @@ import { Lock, Search, LogOut, Zap, RefreshCcw } from "lucide-react";
 import { motion } from "framer-motion";
 import { soundManager } from "@/lib/sounds";
 
-// Matches the structure from our new Google Script - 5 column structure
+// Matches the structure from Google Apps Script backend
 interface TeamData {
   teamId: string;
-  round2Card: string;
-  round2Target: string;
-  round3Card: string;
-  round3Target: string;
-  timestamp: string;
+  round2: string;    // R2 Card
+  r2Target: string;  // R2 Target
+  round3: string;    // R3 Card
+  r3Target: string;  // R3 Target
 }
 
 export default function Admin() {
@@ -63,18 +62,13 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
       const response = await fetch(`${API_URL}?action=readAll`);
       const result = await response.json();
 
-      console.log("[v0] API Response:", result);
-
       if (result.status === "success") {
-        const fetchedData = result.data || [];
-        console.log("[v0] Fetched data count:", fetchedData.length);
-        console.log("[v0] First item structure:", fetchedData[0]);
-        setData(fetchedData);
+        setData(result.data || []);
       } else {
-        console.error("[v0] API Error:", result.message);
+        console.error("API Error:", result.message);
       }
     } catch (error) {
-      console.error("[v0] Fetch Error:", error);
+      console.error("Fetch Error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -113,8 +107,8 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
     const searchLower = searchTerm.toLowerCase();
     return (
       String(item.teamId).toLowerCase().includes(searchLower) ||
-      String(item.round2Target).toLowerCase().includes(searchLower) ||
-      String(item.round3Target).toLowerCase().includes(searchLower)
+      String(item.r2Target).toLowerCase().includes(searchLower) ||
+      String(item.r3Target).toLowerCase().includes(searchLower)
     );
   });
 
@@ -245,19 +239,19 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
           />
           <StatCard
             label="ROUND 2 CARDS"
-            value={data.filter(i => i.round2Card).length}
+            value={data.filter(i => i.round2).length}
             icon="🃏"
             color="text-neon-green"
           />
           <StatCard
             label="ROUND 3 CARDS"
-            value={data.filter(i => i.round3Card).length}
+            value={data.filter(i => i.round3).length}
             icon="🏆"
             color="text-yellow-400"
           />
           <StatCard
             label="ATTACKS SENT"
-            value={data.filter(i => i.round2Target || i.round3Target).length}
+            value={data.filter(i => i.r2Target || i.r3Target).length}
             icon="⚡"
             color="text-danger-red"
           />
@@ -308,36 +302,36 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzrI9o3jv-ASPia9g7tLcsi
                           #{row.teamId}
                         </td>
                         <td className="p-2 sm:p-4">
-                          {row.round2Card ? (
+                          {row.round2 ? (
                             <span className="text-neon-green font-bold drop-shadow-[0_0_5px_rgba(0,255,0,0.5)]">
-                              {row.round2Card}
+                              {row.round2}
                             </span>
                           ) : (
                             <span className="text-gray-600 italic">-</span>
                           )}
                         </td>
                         <td className="p-2 sm:p-4">
-                          {row.round2Target ? (
+                          {row.r2Target ? (
                             <span className="text-danger-red font-bold drop-shadow-[0_0_5px_rgba(255,0,60,0.5)]">
-                              #{row.round2Target}
+                              #{row.r2Target}
                             </span>
                           ) : (
                             <span className="text-gray-600 italic">-</span>
                           )}
                         </td>
                         <td className="p-2 sm:p-4">
-                          {row.round3Card ? (
+                          {row.round3 ? (
                             <span className="text-yellow-400 font-bold drop-shadow-[0_0_5px_rgba(255,215,0,0.5)]">
-                              {row.round3Card}
+                              {row.round3}
                             </span>
                           ) : (
                             <span className="text-gray-600 italic">-</span>
                           )}
                         </td>
                         <td className="p-2 sm:p-4">
-                          {row.round3Target ? (
+                          {row.r3Target ? (
                             <span className="text-danger-red font-bold drop-shadow-[0_0_5px_rgba(255,0,60,0.5)]">
-                              #{row.round3Target}
+                              #{row.r3Target}
                             </span>
                           ) : (
                             <span className="text-gray-600 italic">-</span>
