@@ -33,7 +33,7 @@ Designed and engineered by the **Semicolon IT Wing**, the website handles real-t
 This project is part of the digital infrastructure for Inferno '26. The Semicolon IT Wing is responsible for the end-to-end execution of technical events, ensuring a seamless experience for all participants.
 
 ## 🔗 Official Links
-* **Live Competition Site:** [Luckyverse](https://codearena.luckyverse.tech)
+* **Live Competition Site:** [Code Arena](https://codearena.luckyverse.tech)
 * **College Website:** [SDJ International College](https://sdjic.org)
 
 ---
