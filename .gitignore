@@ -1,0 +1,53 @@
+# Environment Variables (SECRETS - DO NOT TOUCH)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+pnpm-lock.yaml.bak
+
+# Build outputs
+dist
+dist-ssr
+*.local
+code-arena-build.tar.gz
+code-arena-build.zip
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.config/
+Thumbs.db
+
+# IDE settings
+.vscode/settings.json
+.vscode/launch.json
+
+# Deployment Keys
+deploy-key*
+*.pem
+*.key
