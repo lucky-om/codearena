@@ -1,0 +1,22 @@
+# Security Headers for GitHub Pages (via Cloudflare / static hosting)
+# These headers improve the security posture of the site.
+# Developed by: Lucky — Code Arena (Inferno'26)
+
+/*
+  # Prevent clickjacking — site cannot be embedded in an iframe
+  X-Frame-Options: DENY
+
+  # Prevent MIME type sniffing
+  X-Content-Type-Options: nosniff
+
+  # Control referrer information sent to other sites
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Restrict access to powerful browser APIs
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+  # Content Security Policy — restrict resources to same origin + trusted CDNs
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com; frame-ancestors 'none';
+
+  # Force HTTPS (1 year)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
