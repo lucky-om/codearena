@@ -5,14 +5,6 @@ name: Deploy to GitHub Pages
 # Developed by: Lucky
 # Project: Code Arena — Wildcard Draw System (Inferno'26)
 # Live at: https://codearena.luckyverse.tech
-# ═══════════════════════════════════════════════════════════
-#
-# SETUP REQUIRED (one-time):
-#   Go to your GitHub repo → Settings → Secrets and variables → Actions
-#   Add these two repository secrets:
-#     • VITE_ADMIN_KEY    → your real admin password
-#     • VITE_SHEET_API_URL → your Google Apps Script URL
-# ═══════════════════════════════════════════════════════════
 
 on:
   push:
